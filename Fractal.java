@@ -73,9 +73,9 @@ public class Fractal extends JPanel implements Serializable
 	}
 
 	/**
-	 * Die Methode generiert die Mandelbrotmenge, wenn für paramC null übergeben
+	 * Die Methode generiert die Mandelbrotmenge, wenn fÃ¼r paramC null Ã¼bergeben
 	 * wird. Andernfalls generiert die Methode die Juliamenge mit dem
-	 * übergebenem Parameter paramC. Der Fortschritt der Berechnungen kann
+	 * Ã¼bergebenem Parameter paramC. Der Fortschritt der Berechnungen kann
 	 * mithilfe von progress veranschaulicht werden.
 	 * 
 	 * @param paramC
@@ -398,7 +398,7 @@ public class Fractal extends JPanel implements Serializable
 							g.setColor(Color.GRAY);
 							g.drawLine(0, widthHeight / 2 - 1, widthHeight, widthHeight / 2 - 1);
 							g.drawLine(widthHeight / 2, 0, widthHeight / 2, widthHeight);
-							g.drawString("imaginäre Achse", widthHeight / 2 + 5, 10);
+							g.drawString("imaginÃ¤re Achse", widthHeight / 2 + 5, 10);
 							g.drawString("reelle Achse", widthHeight - 80, widthHeight / 2 - 5);
 							g.drawLine(widthHeight / 4, widthHeight / 2 - 5, widthHeight / 4, widthHeight / 2 + 5);
 							g.drawLine((3 * widthHeight) / 4, widthHeight / 2 - 5, (3 * widthHeight) / 4, widthHeight / 2 + 5);

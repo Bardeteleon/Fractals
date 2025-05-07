@@ -150,11 +150,11 @@ public class MFrame extends JFrame
 		juliaCheckBox.setToolTipText("Bei Auswahl wird die Julia Menge entsprechend der eingegebenen Koordinaten gezeichnet");
 		juliaCheckBox.addActionListener(ol);
 		iterationCheckBox = new JCheckBox("ZoomAnpassung");
-		iterationCheckBox.setToolTipText("Die Iterationszahl wird beim zoomen automatisch erhöht.");
+		iterationCheckBox.setToolTipText("Die Iterationszahl wird beim zoomen automatisch erhÃ¶ht.");
 		iterationCheckBox.setSelected(true);
 		iterationCheckBox.addActionListener(ol);
-		complexPlaneCheckBox = new JCheckBox("GaußscheZahlenebene");
-		complexPlaneCheckBox.setToolTipText("Gaußsche Zahlenebene beim nächsten Neu Zeichnen ein-/ausblenden (nur beim Standrad-Intervall möglich)");
+		complexPlaneCheckBox = new JCheckBox("GauÃŸscheZahlenebene");
+		complexPlaneCheckBox.setToolTipText("GauÃŸsche Zahlenebene beim nÃ¤chsten Neu Zeichnen ein-/ausblenden (nur beim Standrad-Intervall mÃ¶glich)");
 		complexPlaneCheckBox.addActionListener(ol);
 		checkBoxPanel.add(juliaCheckBox);
 		checkBoxPanel.add(complexPlaneCheckBox);
@@ -167,8 +167,8 @@ public class MFrame extends JFrame
 		iterationField = new JTextField(5);
 		iterationField.setText(fractals.getIterationRange() + "");
 		iterationDimensionPanel.add(iterationField);
-		iterationDimensionPanel.setToolTipText("Größe des zu zeichnenden Bereichs in Pixel(quadratische Form)");
-		dimensionLabel = new JLabel("Größe: ");
+		iterationDimensionPanel.setToolTipText("GrÃ¶ÃŸe des zu zeichnenden Bereichs in Pixel(quadratische Form)");
+		dimensionLabel = new JLabel("GrÃ¶ÃŸe: ");
 		iterationDimensionPanel.add(dimensionLabel);
 		dimensionField = new JTextField(4);
 		dimensionField.setText(fractals.getWidthHeight() + "");
@@ -197,7 +197,7 @@ public class MFrame extends JFrame
 
 		colorModePanel = new JPanel(new GridLayout(2, 1, 3, 3));
 		colorModePanel.setBorder(BorderFactory.createTitledBorder("Farbmodus"));
-		String[] comboBoxContent = {"Schwarz Weiß", "Schwarz Weiß Modulo", "Farbabstufungen"};
+		String[] comboBoxContent = {"Schwarz WeiÃŸ", "Schwarz WeiÃŸ Modulo", "Farbabstufungen"};
 		colorModeChooser = new JComboBox(comboBoxContent);
 		colorModeChooser.setMaximumSize(new Dimension(150, 18));
 		colorModeChooser.addItemListener(ol);
@@ -373,7 +373,7 @@ public class MFrame extends JFrame
 
 		public void mousePressed(MouseEvent me)
 		{
-			// temporäre Daten für Zoom-Funktion, Zoom-Quadrat
+			// temporÃ¤re Daten fÃ¼r Zoom-Funktion, Zoom-Quadrat
 			if (SwingUtilities.isLeftMouseButton(me))
 			{
 				xPress = me.getX();
@@ -483,22 +483,22 @@ public class MFrame extends JFrame
 		{
 			if (SwingUtilities.isLeftMouseButton(me))
 			{
-				// Zoom-Quadrat bei gedrückter Maus
+				// Zoom-Quadrat bei gedrÃ¼ckter Maus
 				// Anzeige nur im 4.Quadranten (wenn die Koordinate, die
-				// gedrückt wird, den Ursprung darstellt)
+				// gedrÃ¼ckt wird, den Ursprung darstellt)
 				if ((me.getX() > xPress) && (yPress < me.getY()))
 				{
-					// Einteilung der Zeichenoperation in 2Fälle(um immer ein
+					// Einteilung der Zeichenoperation in 2FÃ¤lle(um immer ein
 					// Quadrat zu zeichnen und kein Rechteck)
-					// 1Fall: x-Länge ist größer als die y-Länge des gezogenen
+					// 1Fall: x-LÃ¤nge ist grÃ¶ÃŸer als die y-LÃ¤nge des gezogenen
 					// Rechtecks(mit der Maus wird mit hoher Wahrscheinlichkeit
-					// ein Rechteck gezogen)->x-Länge=QuadratSeitenLänge
+					// ein Rechteck gezogen)->x-LÃ¤nge=QuadratSeitenLÃ¤nge
 					if ((me.getX() - xPress) > (me.getY() - yPress))
 					{
-						// Falls ein Wechsel zwischen den Fällen stattfindet
+						// Falls ein Wechsel zwischen den FÃ¤llen stattfindet
 						// muss die Zeichenoperation des 1Falls nochmal
-						// ausgeführt werden um das Quadrat verschwinden zu
-						// lassen, ansonsten gibt es Überlappungen
+						// ausgefÃ¼hrt werden um das Quadrat verschwinden zu
+						// lassen, ansonsten gibt es Ãœberlappungen
 						if (checker == 2)
 						{
 							fractals.paintZoomRec(xPress, yPress, yOld - yPress);
@@ -509,16 +509,16 @@ public class MFrame extends JFrame
 						fractals.paintZoomRec(xPress, yPress, xOld - xPress);
 						checker = 1;
 					}
-					// 2Fall: y-Länge > x-Länge des gezogenen
-					// Rechtecks->y-Länge=QuadratSeitenLänge
+					// 2Fall: y-LÃ¤nge > x-LÃ¤nge des gezogenen
+					// Rechtecks->y-LÃ¤nge=QuadratSeitenLÃ¤nge
 					else
 					{
 						if ((me.getX() - xPress) < (me.getY() - yPress))
 						{
-							// Falls ein Wechsel zwischen den Fällen stattfindet
+							// Falls ein Wechsel zwischen den FÃ¤llen stattfindet
 							// muss die Zeichenoperation des 1Falls nochmal
-							// ausgeführt werden um das Quadrat verschwinden zu
-							// lassen, ansonsten gibt es Überlappungen
+							// ausgefÃ¼hrt werden um das Quadrat verschwinden zu
+							// lassen, ansonsten gibt es Ãœberlappungen
 							if (checker == 1)
 							{
 								fractals.paintZoomRec(xPress, yPress, xOld - xPress);
@@ -623,10 +623,10 @@ public class MFrame extends JFrame
 					fractals.setKoordinates(Double.parseDouble(reelField2.getText()), Double.parseDouble(reelField3.getText()), Double.parseDouble(imagField2.getText()), Double.parseDouble(imagField3.getText()));
 					fractals.setIterationRange(Integer.parseInt(iterationField.getText()));
 					fractals.setWidthHeight(Integer.parseInt(dimensionField.getText()));
-					graphicsPane.setViewportView(buffPanel); // falls die Größe
+					graphicsPane.setViewportView(buffPanel); // falls die GrÃ¶ÃŸe
 																// des Fractals
 																// Objekts
-																// geändert wird
+																// geÃ¤ndert wird
 																// muss sich das
 																// ScrollPane
 																// aktualisieren,
@@ -637,7 +637,7 @@ public class MFrame extends JFrame
 																// erreicht wird
 				} catch (NumberFormatException ex)
 				{
-					exceptionTextArea.setText("\n\n Fehler beim Einlesen!\n Mögliche Fehlerquelle:\n -Komma statt Punkt\n als Trennzeichen\n -Buchstaben in der Eingabe ");
+					exceptionTextArea.setText("\n\n Fehler beim Einlesen!\n MÃ¶gliche Fehlerquelle:\n -Komma statt Punkt\n als Trennzeichen\n -Buchstaben in der Eingabe ");
 				}
 				if (juliaCheckBox.isSelected())
 				{
@@ -646,7 +646,7 @@ public class MFrame extends JFrame
 						fractals.paintFractals(new Complex(Double.parseDouble(reelField1.getText()), Double.parseDouble(imagField1.getText())), progressBar);
 					} catch (NumberFormatException ex)
 					{
-						exceptionTextArea.setText("\n\n Fehler beim Einlesen!\n Mögliche Fehlerquelle:\n -Komma statt Punkt\n als Trennzeichen\n -Buchstaben in der Eingabe ");
+						exceptionTextArea.setText("\n\n Fehler beim Einlesen!\n MÃ¶gliche Fehlerquelle:\n -Komma statt Punkt\n als Trennzeichen\n -Buchstaben in der Eingabe ");
 					}
 				} else
 					fractals.paintFractals(null, progressBar);
@@ -676,11 +676,11 @@ public class MFrame extends JFrame
 		public void itemStateChanged(ItemEvent ie)
 		{
 			JComboBox selectedItem = (JComboBox) ie.getSource();
-			if (selectedItem.getSelectedItem().equals("Schwarz Weiß"))
+			if (selectedItem.getSelectedItem().equals("Schwarz WeiÃŸ"))
 			{
 				fractals.setColorMode(Fractal.MODE_BLACK_WHITE);
 			}
-			if (selectedItem.getSelectedItem().equals("Schwarz Weiß Modulo"))
+			if (selectedItem.getSelectedItem().equals("Schwarz WeiÃŸ Modulo"))
 			{
 				fractals.setColorMode(Fractal.MODE_BLACK_WHITE_MODULO);
 			}
