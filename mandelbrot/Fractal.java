@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.imageio.ImageIO;
 import javax.swing.JPanel;
@@ -32,7 +33,7 @@ public class Fractal extends JPanel implements Serializable
 	public static final int MODE_COLOR = 3;
 	public boolean mandelbrotmengePainted = true;
 	private boolean stop = false;
-	private volatile int status;
+	private AtomicInteger status = new AtomicInteger(0);
 	private Thread waitThread;
 
 	public Fractal()
@@ -125,7 +126,7 @@ public class Fractal extends JPanel implements Serializable
 							}
 							if (stop)
 							{
-								status = 0;
+								status.set(0);
 								return;
 							}
 						}
@@ -153,6 +154,12 @@ public class Fractal extends JPanel implements Serializable
 					}
 				}
 				repaint();
+				if (progress != null)
+				{
+					progress.setValue(0);
+					progress.setString("Fertig!");
+					status.set(0);
+				}
 			};
 		};
 		waitThread.setDaemon(true);
@@ -241,19 +248,13 @@ public class Fractal extends JPanel implements Serializable
 			int intervall = widthHeight / (100 / prozzAnzahl);
 			if (intervall != 0 && relativeStatus % intervall == 0)
 			{
-				status++;
+				final int current_status = status.incrementAndGet();
 				SwingUtilities.invokeLater(new Runnable()
 				{
 					@Override
 					public void run()
 					{
-						progress.setValue(status);
-						if (status == 100)
-						{
-							progress.setValue(0);
-							progress.setString("Fertig!");
-							status = 0;
-						}
+						progress.setValue(current_status);
 					}
 				});
 			}
@@ -304,11 +305,6 @@ public class Fractal extends JPanel implements Serializable
 	public Complex getParamC()
 	{
 		return paramC;
-	}
-
-	public int getStatus()
-	{
-		return status;
 	}
 
 	public void setIterationRange(int range)
