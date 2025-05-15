@@ -47,8 +47,6 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.filechooser.FileFilter;
 
-import mandelbrot.Fractal.PerformanceGeneration;
-
 public class MFrame extends JFrame
 {
 
@@ -68,12 +66,13 @@ public class MFrame extends JFrame
 	public Component[] panels;
 	private FarbDialogeListener fdl;
 	private FraktalPanelListener fpl;
-	private PerformanceGeneration frac;
 	private FensterListener fl;
 	private OptionListener ol;
 	private MenuBarListener mbl;
 	private Container content;
 	private JFileChooser chooser;
+
+	private boolean withWindowClosingDialog = false;
 
 	public MFrame()
 	{
@@ -86,7 +85,6 @@ public class MFrame extends JFrame
 		// ZeichenPane(Center)
 		fpl = new FraktalPanelListener();
 		fractals = new Fractal();
-		frac = fractals.new PerformanceGeneration();
 		fractals.addMouseMotionListener(fpl);
 		fractals.addMouseListener(fpl);
 		buffPanel = new JPanel();
@@ -392,7 +390,7 @@ public class MFrame extends JFrame
 				{
 					if (me.getX() - xPress > me.getY() - yPress)
 					{
-						fractals.setKoordinates(frac.getKoordinatesRe(xPress), frac.getKoordinatesRe(me.getX()), frac.getKoordinatesIm(yPress + (me.getX() - xPress)), frac.getKoordinatesIm(yPress));
+						fractals.setKoordinates(fractals.getKoordinatesRe(xPress), fractals.getKoordinatesRe(me.getX()), fractals.getKoordinatesIm(yPress + (me.getX() - xPress)), fractals.getKoordinatesIm(yPress));
 						if (iterationCheckBox.isSelected())
 						{
 							fractals.setIterationRange(-1);
@@ -400,7 +398,7 @@ public class MFrame extends JFrame
 
 					} else if (me.getX() - xPress < me.getY() - yPress)
 					{
-						fractals.setKoordinates(frac.getKoordinatesRe(xPress), frac.getKoordinatesRe(xPress + (me.getY() - yPress)), frac.getKoordinatesIm(me.getY()), frac.getKoordinatesIm(yPress));
+						fractals.setKoordinates(fractals.getKoordinatesRe(xPress), fractals.getKoordinatesRe(xPress + (me.getY() - yPress)), fractals.getKoordinatesIm(me.getY()), fractals.getKoordinatesIm(yPress));
 						if (iterationCheckBox.isSelected())
 						{
 							fractals.setIterationRange(-1);
@@ -474,8 +472,8 @@ public class MFrame extends JFrame
 			// anzeigen lassen
 			if (!juliaCheckBox.isSelected())
 			{
-				reelField1.setText("" + frac.getKoordinatesRe(me.getX()));
-				imagField1.setText("" + frac.getKoordinatesIm(me.getY()));
+				reelField1.setText("" + fractals.getKoordinatesRe(me.getX()));
+				imagField1.setText("" + fractals.getKoordinatesIm(me.getY()));
 			}
 		}
 
@@ -701,7 +699,9 @@ public class MFrame extends JFrame
 		@Override
 		public void windowClosing(WindowEvent e)
 		{
-			int i = JOptionPane.showConfirmDialog(MFrame.this, "Wollen Sie wirklich beenden?", "WindowClosing", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+			int i = withWindowClosingDialog 
+						? JOptionPane.showConfirmDialog(MFrame.this, "Wollen Sie wirklich beenden?", "WindowClosing", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE)
+						: 0;
 			if (i == 0)
 			{
 				System.exit(0);

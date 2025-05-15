@@ -17,6 +17,8 @@ import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import javax.swing.SwingUtilities;
 
+import fractals.core.Iterator;
+
 public class Fractal extends JPanel implements Serializable
 {
 	private double maxIm, minIm, maxRe, minRe, maxOld, minOld;
@@ -109,16 +111,15 @@ public class Fractal extends JPanel implements Serializable
 				@Override
 				public void run()
 				{
-					PerformanceGeneration performance = new PerformanceGeneration();
 					for (int i = 0; i < widthHeight; i++)
 					{
 						for (int j = intervall * (prozzAkt - 1); j < prozzAkt * intervall; j++)
 						{
 							Color col;
-							if (param == null)
-								col = performance.getIterationColor(performance.iteration(new Complex(0, 0), new Complex(performance.getKoordinatesRe(i), performance.getKoordinatesIm(j))));
+							if (mandelbrotmengePainted)
+								col = getIterationColor(Iterator.iterateMandelbrot(new Complex(getKoordinatesRe(i), getKoordinatesIm(j)), iterationRange));
 							else
-								col = performance.getIterationColor(performance.iteration(new Complex(performance.getKoordinatesRe(i), performance.getKoordinatesIm(j)), param));
+								col = getIterationColor(Iterator.iterateJulia(new Complex(getKoordinatesRe(i), getKoordinatesIm(j)), param, iterationRange));
 							synchronized (Fractal.this)
 							{
 								g.setColor(col);
@@ -166,68 +167,40 @@ public class Fractal extends JPanel implements Serializable
 		waitThread.start();
 	}
 
-	public class PerformanceGeneration
+	private Color getIterationColor(int iterationCounter)
 	{
-		private int iteration(Complex startvalue, Complex parameterC)
+		switch (mode)
 		{
-			int counter = 0;
-			for (int i = 1; i <= iterationRange; i++)
+		case 1:
+			if (iterationCounter == iterationRange)
 			{
-				if (startvalue.norm() < 2)
-				{
-					startvalue.mult(startvalue.clone()).add(parameterC);
-					counter++;
-				} else
-					return counter;
-			}
-			return counter;
-		}
-
-		private Color getIterationColor(int iterationCounter)
-		{
-			switch (mode)
+				return Color.BLACK;
+			} else
+				return Color.WHITE;
+		case 2:
+			if (iterationCounter < iterationRange)
 			{
-			case 1:
-				if (iterationCounter == iterationRange)
+				if (iterationCounter % 2 != 0)
 				{
 					return Color.BLACK;
 				} else
 					return Color.WHITE;
-			case 2:
-				if (iterationCounter < iterationRange)
+			} else
+				return Color.BLACK;
+		case 3:
+			if (iterationCounter < iterationRange)
+			{
+				for (int i = colorCollection.length - 1; i >= 0; i--)
 				{
-					if (iterationCounter % 2 != 0)
+					if (iterationCounter > i * (iterationRange / colorCollection.length))
 					{
-						return Color.BLACK;
-					} else
-						return Color.WHITE;
-				} else
-					return Color.BLACK;
-			case 3:
-				if (iterationCounter < iterationRange)
-				{
-					for (int i = colorCollection.length - 1; i >= 0; i--)
-					{
-						if (iterationCounter > i * (iterationRange / colorCollection.length))
-						{
-							return colorCollection[i];
-						}
+						return colorCollection[i];
 					}
-				} else
-					return Color.WHITE;
-			default:
-				return Color.black;
-			}
-		}
-
-		public double getKoordinatesRe(int pixel)
-		{
-			return minRe + pixel * ((maxRe - minRe) / (widthHeight - 1));
-		}
-
-		public double getKoordinatesIm(int pixel)
-		{
-			return maxIm + pixel * ((minIm - maxIm) / (widthHeight - 1));
+				}
+			} else
+				return Color.WHITE;
+		default:
+			return Color.black;
 		}
 	}
 
