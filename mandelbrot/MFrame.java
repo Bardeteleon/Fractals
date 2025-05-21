@@ -47,6 +47,8 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.filechooser.FileFilter;
 
+import fractals.core.Complex;
+
 public class MFrame extends JFrame
 {
 

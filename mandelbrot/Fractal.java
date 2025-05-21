@@ -18,6 +18,7 @@ import javax.swing.JProgressBar;
 import javax.swing.SwingUtilities;
 
 import fractals.core.Iterator;
+import fractals.core.Complex;
 
 public class Fractal extends JPanel implements Serializable
 {

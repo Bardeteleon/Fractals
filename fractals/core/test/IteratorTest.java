@@ -5,7 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.api.Test;
 
 import fractals.core.Iterator;
-import mandelbrot.Complex;
+import fractals.core.Complex;
 
 class IteratorTest
 {

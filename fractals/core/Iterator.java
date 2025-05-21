@@ -1,6 +1,6 @@
 package fractals.core;
 
-import mandelbrot.Complex;
+import fractals.core.Complex;
 
 public class Iterator
 {
