@@ -1,65 +1,60 @@
 package fractals.core;
 
-public class Complex
+public final class Complex
 {
-	private double real, imag;
+	private final double real;
+	private final double imag;
 
-	public Complex(double realTeil, double imagTeil)
+	public Complex(double real, double imag)
 	{
-		setReal(realTeil);
-		setImag(imagTeil);
+		this.real = real;
+		this.imag = imag;
 	}
+
 	public Complex add(Complex c)
 	{
-		this.setReal(this.getReal() + c.getReal());
-		this.setImag(this.getImag() + c.getImag());
-		return this;
+		return new Complex(this.real + c.getReal(), this.imag + c.getImag());
 	}
+
 	public Complex sub(Complex c)
 	{
-		this.setReal(this.getReal() - c.getReal());
-		this.setImag(this.getImag() - c.getImag());
-		return this;
+		return new Complex(this.real - c.getReal(), this.imag - c.getImag());
 	}
+
 	public Complex mult(Complex c)
 	{
-		double r = this.getReal();
-		this.setReal(this.getReal() * c.getReal() - this.getImag() * c.getImag());
-		this.setImag(r * c.getImag() + this.getImag() * c.getReal());
-		return this;
+		double r = this.real * c.getReal() - this.imag * c.getImag();
+		double i = this.real * c.getImag() + this.imag * c.getReal();
+		return new Complex(r, i);
 	}
+
 	public double norm()
 	{
-		return Math.sqrt(this.getReal() * this.getReal() + this.getImag() * this.getImag());
+		return Math.sqrt(this.real * this.real + this.imag * this.imag);
 	}
+
 	@Override
 	public Complex clone()
 	{
-		return new Complex(this.getReal(), this.getImag());
+		return new Complex(this.real, this.imag);
 	}
+
 	@Override
 	public String toString()
 	{
-		if (this.getImag() < 0)
+		if (this.imag < 0)
 		{
-			return real + " - " + imag * (-1) + "i";
-		} else
+			return real + " - " + (-imag) + "i";
+		}
+		else
+		{
 			return real + " + " + imag + "i";
-	}
-
-	private void setReal(double real)
-	{
-		this.real = real;
+		}
 	}
 
 	public double getReal()
 	{
 		return real;
-	}
-
-	private void setImag(double imag)
-	{
-		this.imag = imag;
 	}
 
 	public double getImag()

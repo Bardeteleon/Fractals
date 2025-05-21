@@ -17,12 +17,12 @@ public class Iterator
     private static int iterate(Complex startValue, Complex parameter, int iterationRange)
     {
         int currentIteration = 0;
-        Complex currentValue = startValue.clone();
+        Complex currentValue = startValue;
         for (int i = 1; i <= iterationRange; i++)
         {
             if (currentValue.norm() < 2)
             {
-                currentValue.mult(currentValue.clone()).add(parameter);
+                currentValue = currentValue.mult(currentValue).add(parameter);
                 currentIteration++;
             } 
             else
