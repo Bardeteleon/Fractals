@@ -1,0 +1,2 @@
+./build.sh
+java -cp build mandelbrot.MStarter

@@ -1,0 +1,1 @@
+javac -cp "jars/junit-platform-console-standalone-1.9.3.jar" -d build --release 8 $(find . -name "*.java")
