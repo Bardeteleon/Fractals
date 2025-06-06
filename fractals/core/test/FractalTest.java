@@ -5,6 +5,7 @@ import org.junit.jupiter.api.BeforeEach;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.Arrays;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import fractals.core.Fractal;
 import fractals.core.Configuration;
@@ -39,5 +40,15 @@ class FractalTest
                              "Failure at i = " + i + ", j = " + j + ", whole grid: " + Arrays.deepToString(fractal.getIterationGrid()));
             }
         }
+    }
+
+    @Test
+    void GivenSmallFractal_WhenEvaluate_ThenFinishCallbackIsCalled()
+    {
+        final AtomicBoolean called = new AtomicBoolean(false);
+        fractal.setFinishCallback(() -> { called.set(true); });
+        fractal.evaluate();
+        fractal.waitToFinish();
+        assertEquals(true, called.get());
     }
 }

@@ -6,6 +6,7 @@ import fractals.core.Configuration;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 
 public class Fractal
@@ -16,12 +17,17 @@ public class Fractal
     private AtomicInteger status = new AtomicInteger(0);
 	private boolean stop = false;
 	private Thread waitThread;
+	private Runnable finishCallback;
 
     public Fractal(Configuration configuration)
     {
 		this.configuration = configuration;
         this.iterationGrid = new int[this.configuration.widthHeight][this.configuration.widthHeight];
     }
+
+	public void setFinishCallback(Runnable finishCallback) {
+		this.finishCallback = finishCallback;
+	}
 
     public void evaluate()
 	{
@@ -68,6 +74,10 @@ public class Fractal
 					{
 						e.printStackTrace();
 					}
+				}
+				if (Objects.nonNull(finishCallback))
+				{
+					finishCallback.run();
 				}
 				status.set(0);
 			};
