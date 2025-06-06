@@ -1,11 +1,20 @@
 package fractals.core.test; 
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.BeforeEach;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.stream.IntStream;
+import java.util.stream.Collectors;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.stream.Stream;
+import java.util.Collections;
 
 import fractals.core.Fractal;
 import fractals.core.Configuration;
@@ -50,5 +59,28 @@ class FractalTest
         fractal.evaluate();
         fractal.waitToFinish();
         assertEquals(true, called.get());
+    }
+    
+    @Test
+    void GivenSmallFractal_WhenEvaluate_ThenStatusUpdateCallbackIsCalled()
+    {
+        final List<Integer> statusUpdates = new ArrayList<Integer>();
+        final List<Integer> expectedStatusUpdates = Arrays.asList(0, 100);
+        fractal.setStatusUpdateCallback((status) -> { statusUpdates.add(status); });
+        fractal.evaluate();
+        fractal.waitToFinish();
+        assertTrue(statusUpdates.equals(expectedStatusUpdates), "statusUpdates: " + statusUpdates + ", expectedStatusUpdates: " + expectedStatusUpdates);
+    }
+
+    @Test
+    void GivenBigFractal_WhenEvaluate_ThenStatusUpdateCallbackIsCalled()
+    {
+        final List<Integer> statusUpdates = Collections.synchronizedList(new ArrayList<Integer>());
+        final List<Integer> expectedStatusUpdates = Stream.concat(IntStream.range(0, 97).boxed(), Stream.of(100)).collect(Collectors.toList());
+        fractal = new Fractal(new Configuration.Builder().widthHeight(400).build());
+        fractal.setStatusUpdateCallback((status) -> { statusUpdates.add(status); });
+        fractal.evaluate();
+        fractal.waitToFinish();
+        assertTrue(statusUpdates.equals(expectedStatusUpdates), "statusUpdates: " + statusUpdates + ", expectedStatusUpdates: " + expectedStatusUpdates);
     }
 }

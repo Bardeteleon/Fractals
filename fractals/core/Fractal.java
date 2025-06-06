@@ -7,10 +7,14 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.function.Consumer;
 
 
 public class Fractal
 {
+	public final static int MIN_STATUS = 0;
+	public final static int MAX_STATUS = 100;
+
 	private final Configuration configuration;
     private final int[][] iterationGrid;
 
@@ -18,6 +22,7 @@ public class Fractal
 	private boolean stop = false;
 	private Thread waitThread;
 	private Runnable finishCallback;
+	private Consumer<Integer> statusUpdateCallback;
 
     public Fractal(Configuration configuration)
     {
@@ -29,10 +34,16 @@ public class Fractal
 		this.finishCallback = finishCallback;
 	}
 
+	public void setStatusUpdateCallback(Consumer<Integer> statusUpdateCallback) {
+		this.statusUpdateCallback = statusUpdateCallback;
+	}
+
     public void evaluate()
 	{
 		final List<Splitter.Split> widhtHeightSplits = new Splitter(configuration.widthHeight).splitInto(Runtime.getRuntime().availableProcessors());
 		final List<Thread> threads = new ArrayList<Thread>(widhtHeightSplits.size());
+
+		setStatus(MIN_STATUS);
 
 		for (Splitter.Split currentSplit : widhtHeightSplits)
 		{
@@ -48,7 +59,7 @@ public class Fractal
 							iterationGrid[i][j] = iterateAt(transform(i, j));
 							if (stop)
 							{
-								status.set(0);
+								setStatus(MIN_STATUS);
 								return;
 							}
 						}
@@ -75,11 +86,8 @@ public class Fractal
 						e.printStackTrace();
 					}
 				}
-				if (Objects.nonNull(finishCallback))
-				{
-					finishCallback.run();
-				}
-				status.set(0);
+				setStatus(MAX_STATUS);
+				callFinishCallback();
 			};
 		};
 		waitThread.setDaemon(true);
@@ -115,12 +123,16 @@ public class Fractal
 			return Iterator.iterateMandelbrot(coordinate, configuration.iterationRange);
 	}
 
-	private void updateStatus(int prozzAnzahl, int relativeStatus)
+	private void updateStatus(int splitSize, int relativeStatus)
 	{
-		int intervall = configuration.widthHeight / (100 / prozzAnzahl);
-		if (intervall != 0 && relativeStatus % intervall == 0)
+		final int statusPerSplit = MAX_STATUS / splitSize;
+		final int incrementIntervall = configuration.widthHeight / statusPerSplit;
+		if ((incrementIntervall != 0) && 
+			(relativeStatus != 0) &&
+			(relativeStatus % incrementIntervall == 0))
 		{
-			status.incrementAndGet();
+			final int currentStatus = status.incrementAndGet();
+			callStatusUpdateCallback(currentStatus);
 		}
 	}
 
@@ -131,5 +143,27 @@ public class Fractal
 			   gridX * ((configuration.max.getReal() - configuration.min.getReal()) / (configuration.widthHeight - 1)),
 		    configuration.max.getImag() + 
 		       gridY * ((configuration.min.getImag() - configuration.max.getImag()) / (configuration.widthHeight - 1)));
+	}
+
+	private void callFinishCallback()
+	{
+		if (Objects.nonNull(finishCallback))
+		{
+			finishCallback.run();
+		}
+	}
+
+	private void callStatusUpdateCallback(int status)
+	{
+		if (Objects.nonNull(statusUpdateCallback))
+		{
+			statusUpdateCallback.accept(status);
+		}
+	}
+
+	private void setStatus(int status) 
+	{
+		this.status.set(status);
+		callStatusUpdateCallback(status);
 	}
 }
