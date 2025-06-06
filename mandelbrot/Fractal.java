@@ -10,6 +10,8 @@ import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.List;
+import java.util.Optional;
+import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.imageio.ImageIO;
@@ -19,6 +21,9 @@ import javax.swing.SwingUtilities;
 
 import fractals.core.Iterator;
 import fractals.core.Complex;
+import fractals.core.Configuration;
+import fractals.core.Configuration.Builder;
+import fractals.core.Variant;
 
 public class Fractal extends JPanel implements Serializable
 {
@@ -99,73 +104,37 @@ public class Fractal extends JPanel implements Serializable
 			mandelbrotmengePainted = false;
 			this.paramC = param;
 		}
-		final Graphics g = buffer.getGraphics();
-		final int prozzAnzahl = Runtime.getRuntime().availableProcessors();
-		final int intervall = widthHeight / prozzAnzahl;
-		final Thread[] threads = new Thread[prozzAnzahl];
+		final fractals.core.Fractal fractal = new fractals.core.Fractal(
+			new Configuration.Builder()
+								.widthHeight(widthHeight)
+								.iterationRange(iterationRange)
+								.variant(mandelbrotmengePainted ? fractals.core.Variant.MANDELBROT : fractals.core.Variant.JULIA)
+								.variant_parameter(mandelbrotmengePainted ? Optional.empty() : Optional.of(param))
+								.min(new Complex(minRe, minIm))
+								.max(new Complex(maxRe, maxIm))
+								.build());
+		fractal.setFinishCallback(() -> { SwingUtilities.invokeLater(() -> {
+			colorizeImage(fractal.getIterationGrid());
+			if (Objects.nonNull(progress))
+				progress.setString("Fertig!");
+			repaint(); 
+		}); });
+		fractal.setStatusUpdateCallback((status) -> { SwingUtilities.invokeLater(() -> { 
+			if (Objects.nonNull(progress)) 
+				progress.setValue(status); 
+		}); });
+		fractal.evaluate();
+	}
 
-		for (int prozz = 1; prozz <= prozzAnzahl; prozz++)
+	private void colorizeImage(int[][] iterationGrid)
+	{
+		for (int i = 0; i < iterationGrid.length; i++)
 		{
-			final int prozzAkt = prozz;
-			threads[prozz - 1] = new Thread()
+			for (int j = 0; j < iterationGrid[i].length; j++)
 			{
-				@Override
-				public void run()
-				{
-					for (int i = 0; i < widthHeight; i++)
-					{
-						for (int j = intervall * (prozzAkt - 1); j < prozzAkt * intervall; j++)
-						{
-							Color col;
-							if (mandelbrotmengePainted)
-								col = getIterationColor(Iterator.iterateMandelbrot(new Complex(getKoordinatesRe(i), getKoordinatesIm(j)), iterationRange));
-							else
-								col = getIterationColor(Iterator.iterateJulia(new Complex(getKoordinatesRe(i), getKoordinatesIm(j)), param, iterationRange));
-							synchronized (Fractal.this)
-							{
-								g.setColor(col);
-								g.drawLine(i, j, i, j);
-							}
-							if (stop)
-							{
-								status.set(0);
-								return;
-							}
-						}
-						if (progress != null)
-							updateStatus(prozzAnzahl, i, progress);
-					}
-				}
-			};
-			threads[prozz - 1].setDaemon(true);
-			threads[prozz - 1].start();
+				buffer.setRGB(i, j, getIterationColor(iterationGrid[i][j]).getRGB());
+			}
 		}
-		waitThread = new Thread()
-		{
-			@Override
-			public void run()
-			{
-				for (Thread t : threads)
-				{
-					try
-					{
-						t.join();
-					} catch (InterruptedException e)
-					{
-						e.printStackTrace();
-					}
-				}
-				repaint();
-				if (progress != null)
-				{
-					progress.setValue(0);
-					progress.setString("Fertig!");
-					status.set(0);
-				}
-			};
-		};
-		waitThread.setDaemon(true);
-		waitThread.start();
 	}
 
 	private Color getIterationColor(int iterationCounter)
