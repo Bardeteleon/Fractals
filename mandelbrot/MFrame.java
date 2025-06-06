@@ -716,7 +716,7 @@ public class MFrame extends JFrame
 			if (c.getSource() instanceof JProgressBar)
 			{
 				JProgressBar bar = (JProgressBar) c.getSource();
-				if (bar.getValue() == 0)
+				if (bar.getValue() == 100)
 				{
 					if (fractals.getMouseListeners().length < 1)
 					{

@@ -40,9 +40,9 @@ public class Fractal extends JPanel implements Serializable
 	public static final int MODE_BLACK_WHITE_MODULO = 2;
 	public static final int MODE_COLOR = 3;
 	public boolean mandelbrotmengePainted = true;
-	private boolean stop = false;
 	private AtomicInteger status = new AtomicInteger(0);
 	private Thread waitThread;
+	private fractals.core.Fractal fractal;
 
 	public Fractal()
 	{
@@ -92,7 +92,6 @@ public class Fractal extends JPanel implements Serializable
 	 */
 	public void paintFractals(final Complex param, final JProgressBar progress)
 	{
-		stop = false;
 		if (progress != null)
 		{
 			progress.setString(null);
@@ -104,7 +103,7 @@ public class Fractal extends JPanel implements Serializable
 			mandelbrotmengePainted = false;
 			this.paramC = param;
 		}
-		final fractals.core.Fractal fractal = new fractals.core.Fractal(
+		fractal = new fractals.core.Fractal(
 			new Configuration.Builder()
 								.widthHeight(widthHeight)
 								.iterationRange(iterationRange)
@@ -114,10 +113,10 @@ public class Fractal extends JPanel implements Serializable
 								.max(new Complex(maxRe, maxIm))
 								.build());
 		fractal.setFinishCallback(() -> { SwingUtilities.invokeLater(() -> {
-			colorizeImage(fractal.getIterationGrid());
+			colorizeImage();
+			repaint();
 			if (Objects.nonNull(progress))
 				progress.setString("Fertig!");
-			repaint(); 
 		}); });
 		fractal.setStatusUpdateCallback((status) -> { SwingUtilities.invokeLater(() -> { 
 			if (Objects.nonNull(progress)) 
@@ -126,8 +125,12 @@ public class Fractal extends JPanel implements Serializable
 		fractal.evaluate();
 	}
 
-	private void colorizeImage(int[][] iterationGrid)
+	private void colorizeImage()
 	{
+		if (Objects.isNull(fractal))
+			return;
+
+		final int[][] iterationGrid = fractal.getIterationGrid();
 		for (int i = 0; i < iterationGrid.length; i++)
 		{
 			for (int j = 0; j < iterationGrid[i].length; j++)
@@ -298,7 +301,8 @@ public class Fractal extends JPanel implements Serializable
 
 	public void stop()
 	{
-		stop = true;
+		if (Objects.nonNull(fractal))
+			fractal.stop();
 	}
 
 	public void paintZoomRec(int x, int y, int width)

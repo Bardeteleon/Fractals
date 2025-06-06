@@ -59,7 +59,6 @@ public class Fractal
 							iterationGrid[i][j] = iterateAt(transform(i, j));
 							if (stop)
 							{
-								setStatus(MIN_STATUS);
 								return;
 							}
 						}
