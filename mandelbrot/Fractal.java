@@ -187,26 +187,6 @@ public class Fractal extends JPanel implements Serializable
 		return maxIm + pixel * ((minIm - maxIm) / (widthHeight - 1));
 	}
 
-	private void updateStatus(int prozzAnzahl, int relativeStatus, final JProgressBar progress)
-	{
-		if (progress != null)
-		{
-			int intervall = widthHeight / (100 / prozzAnzahl);
-			if (intervall != 0 && relativeStatus % intervall == 0)
-			{
-				final int current_status = status.incrementAndGet();
-				SwingUtilities.invokeLater(new Runnable()
-				{
-					@Override
-					public void run()
-					{
-						progress.setValue(current_status);
-					}
-				});
-			}
-		}
-	}
-
 	@Override
 	public Dimension getPreferredSize()
 	{
