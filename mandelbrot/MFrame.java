@@ -48,6 +48,7 @@ import javax.swing.event.ChangeListener;
 import javax.swing.filechooser.FileFilter;
 
 import fractals.core.Complex;
+import fractals.core.Colorizer.Mode;
 
 public class MFrame extends JFrame
 {
@@ -678,16 +679,16 @@ public class MFrame extends JFrame
 			JComboBox selectedItem = (JComboBox) ie.getSource();
 			if (selectedItem.getSelectedItem().equals("Schwarz Weiß"))
 			{
-				fractals.setColorMode(Fractal.MODE_BLACK_WHITE);
+				fractals.setColorMode(Mode.BLACK_WHITE);
 			}
 			if (selectedItem.getSelectedItem().equals("Schwarz Weiß Modulo"))
 			{
-				fractals.setColorMode(Fractal.MODE_BLACK_WHITE_MODULO);
+				fractals.setColorMode(Mode.BLACK_WHITE_MODULO);
 			}
 			if (selectedItem.getSelectedItem().equals("Farbabstufungen"))
 			{
 				colorButton.setEnabled(true);
-				fractals.setColorMode(Fractal.MODE_COLOR);
+				fractals.setColorMode(Mode.COLOR);
 			} else
 				colorButton.setEnabled(false);
 

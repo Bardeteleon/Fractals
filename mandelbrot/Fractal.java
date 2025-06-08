@@ -24,21 +24,18 @@ import fractals.core.Complex;
 import fractals.core.Configuration;
 import fractals.core.Configuration.Builder;
 import fractals.core.Variant;
+import fractals.core.Colorizer;
+import fractals.core.Colorizer.Mode;
 
 public class Fractal extends JPanel implements Serializable
 {
 	private double maxIm, minIm, maxRe, minRe, maxOld, minOld;
 	private int widthHeight;
 	private int iterationRange;
-	private int mode;
+	private Colorizer.Mode mode;
 	private BufferedImage buffer;
-	private List<BufferedImage> history; // TODO
 	private Complex paramC;
-	private Color[] colorCollection =
-	{ Color.blue, Color.cyan, Color.darkGray, Color.magenta };
-	public static final int MODE_BLACK_WHITE = 1;
-	public static final int MODE_BLACK_WHITE_MODULO = 2;
-	public static final int MODE_COLOR = 3;
+	private Color[] colorCollection = { Color.blue, Color.cyan, Color.darkGray, Color.magenta };
 	public boolean mandelbrotmengePainted = true;
 	private AtomicInteger status = new AtomicInteger(0);
 	private Thread waitThread;
@@ -49,10 +46,10 @@ public class Fractal extends JPanel implements Serializable
 		setKoordinates(-2.0, 2.0, -2.0, 2.0);
 		setWidthHeight(700);
 		setIterationRange(40);
-		setColorMode(MODE_BLACK_WHITE);
+		setColorMode(Colorizer.Mode.BLACK_WHITE);
 	}
 
-	public Fractal(double minRe, double maxRe, double minIm, double maxIm, int iterationRange, int widthHeight, int mode)
+	public Fractal(double minRe, double maxRe, double minIm, double maxIm, int iterationRange, int widthHeight, Colorizer.Mode mode)
 	{
 
 		setKoordinates(minRe, maxRe, minIm, maxIm);
@@ -130,51 +127,10 @@ public class Fractal extends JPanel implements Serializable
 		if (Objects.isNull(fractal))
 			return;
 
-		final int[][] iterationGrid = fractal.getIterationGrid();
-		for (int i = 0; i < iterationGrid.length; i++)
-		{
-			for (int j = 0; j < iterationGrid[i].length; j++)
-			{
-				buffer.setRGB(i, j, getIterationColor(iterationGrid[i][j]).getRGB());
-			}
-		}
-	}
-
-	private Color getIterationColor(int iterationCounter)
-	{
-		switch (mode)
-		{
-		case 1:
-			if (iterationCounter == iterationRange)
-			{
-				return Color.BLACK;
-			} else
-				return Color.WHITE;
-		case 2:
-			if (iterationCounter < iterationRange)
-			{
-				if (iterationCounter % 2 != 0)
-				{
-					return Color.BLACK;
-				} else
-					return Color.WHITE;
-			} else
-				return Color.BLACK;
-		case 3:
-			if (iterationCounter < iterationRange)
-			{
-				for (int i = colorCollection.length - 1; i >= 0; i--)
-				{
-					if (iterationCounter > i * (iterationRange / colorCollection.length))
-					{
-						return colorCollection[i];
-					}
-				}
-			} else
-				return Color.WHITE;
-		default:
-			return Color.black;
-		}
+		Colorizer colorizer = new Colorizer(fractal.getIterationGrid(), iterationRange);
+		colorizer.setMode(mode);
+		colorizer.setColorCollection(colorCollection);
+		colorizer.applyTo(buffer);
 	}
 
 	public double getKoordinatesRe(int pixel)
@@ -247,10 +203,9 @@ public class Fractal extends JPanel implements Serializable
 			iterationRange = range;
 	}
 
-	public void setColorMode(int mode)
+	public void setColorMode(Colorizer.Mode mode)
 	{
-		if (mode == 1 || mode == 2 || mode == 3)
-			this.mode = mode;
+		this.mode = mode;
 	}
 
 	public void setKoordinates(double minRe, double maxRe, double minIm, double maxIm)
