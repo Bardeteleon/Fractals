@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.BeforeEach;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -73,14 +74,30 @@ class FractalTest
     }
 
     @Test
-    void GivenBigFractal_WhenEvaluate_ThenStatusUpdateCallbackIsCalled()
+    void GivenBigFractal_WhenEvaluateWithOneThread_ThenStatusUpdateCallbackIsCalled()
     {
         final List<Integer> statusUpdates = Collections.synchronizedList(new ArrayList<Integer>());
-        final List<Integer> expectedStatusUpdates = Stream.concat(IntStream.range(0, 97).boxed(), Stream.of(100)).collect(Collectors.toList());
-        fractal = new Fractal(new Configuration.Builder().widthHeight(400).build());
+        final List<Integer> expectedStatusUpdates = Stream.concat(IntStream.range(0, 100).boxed(), Stream.of(100)).collect(Collectors.toList());
+        fractal = new Fractal(new Configuration.Builder().widthHeight(400).maxThreads(1).build());
         fractal.setStatusUpdateCallback((status) -> { statusUpdates.add(status); });
         fractal.evaluate();
         fractal.waitToFinish();
+        assertTrue(statusUpdates.equals(expectedStatusUpdates), "statusUpdates: " + statusUpdates + ", expectedStatusUpdates: " + expectedStatusUpdates);
+    }
+
+    @Test
+    void GivenBigFractal_WhenEvaluateWithMultipleThreads_ThenStatusUpdateCallbackIsCalled()
+    {
+        assumeTrue(Runtime.getRuntime().availableProcessors() >= 2);
+        final List<Integer> statusUpdates = Collections.synchronizedList(new ArrayList<Integer>());
+        final List<Integer> expectedStatusUpdates = Stream.concat(IntStream.range(0, 99).boxed(), Stream.of(100)).collect(Collectors.toList());
+        fractal = new Fractal(new Configuration.Builder().widthHeight(400).maxThreads(2).build());
+        fractal.setStatusUpdateCallback((status) -> { statusUpdates.add(status); });
+        fractal.evaluate();
+        fractal.waitToFinish();
+        
+        Collections.sort(statusUpdates); // it can happen that the status updates are not in order due to thread switching between status increment and callback call
+
         assertTrue(statusUpdates.equals(expectedStatusUpdates), "statusUpdates: " + statusUpdates + ", expectedStatusUpdates: " + expectedStatusUpdates);
     }
 }

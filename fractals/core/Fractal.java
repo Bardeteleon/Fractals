@@ -40,7 +40,8 @@ public class Fractal
 
     public void evaluate()
 	{
-		final List<Splitter.Split> widhtHeightSplits = new Splitter(configuration.widthHeight).splitInto(Runtime.getRuntime().availableProcessors());
+		final int maxThreads = Math.min(configuration.maxThreads, Runtime.getRuntime().availableProcessors());
+		final List<Splitter.Split> widhtHeightSplits = new Splitter(configuration.widthHeight).splitInto(maxThreads);
 		final List<Thread> threads = new ArrayList<Thread>(widhtHeightSplits.size());
 
 		setStatus(MIN_STATUS);
