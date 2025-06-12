@@ -23,6 +23,7 @@ import fractals.core.Iterator;
 import fractals.core.Complex;
 import fractals.core.Configuration;
 import fractals.core.Configuration.Builder;
+import fractals.core.Configuration.IterationRangeMode;
 import fractals.core.Variant;
 import fractals.core.Colorizer;
 import fractals.core.Colorizer.Mode;
@@ -31,7 +32,8 @@ public class Fractal extends JPanel implements Serializable
 {
 	private double maxIm, minIm, maxRe, minRe, maxOld, minOld;
 	private int widthHeight;
-	private int iterationRange;
+	private int iterationRangeManual;
+	private Configuration.IterationRangeMode iterationRangeMode;
 	private Colorizer.Mode mode;
 	private BufferedImage buffer;
 	private Complex paramC;
@@ -40,6 +42,7 @@ public class Fractal extends JPanel implements Serializable
 	private AtomicInteger status = new AtomicInteger(0);
 	private Thread waitThread;
 	private fractals.core.Fractal fractal;
+	private fractals.core.Configuration configuration;
 
 	public Fractal()
 	{
@@ -100,15 +103,16 @@ public class Fractal extends JPanel implements Serializable
 			mandelbrotmengePainted = false;
 			this.paramC = param;
 		}
-		fractal = new fractals.core.Fractal(
-			new Configuration.Builder()
+		configuration = new Configuration.Builder()
 								.widthHeight(widthHeight)
-								.iterationRange(iterationRange)
+								.iterationRangeManual(iterationRangeManual)
+								.iterationRangeMode(iterationRangeMode)
 								.variant(mandelbrotmengePainted ? fractals.core.Variant.MANDELBROT : fractals.core.Variant.JULIA)
 								.variant_parameter(mandelbrotmengePainted ? Optional.empty() : Optional.of(param))
 								.min(new Complex(minRe, minIm))
 								.max(new Complex(maxRe, maxIm))
-								.build());
+								.build();
+		fractal = new fractals.core.Fractal(configuration);
 		fractal.setFinishCallback(() -> { SwingUtilities.invokeLater(() -> {
 			colorizeImage();
 			repaint();
@@ -127,7 +131,10 @@ public class Fractal extends JPanel implements Serializable
 		if (Objects.isNull(fractal))
 			return;
 
-		Colorizer colorizer = new Colorizer(fractal.getIterationGrid(), iterationRange);
+		if (Objects.isNull(configuration))
+			return;
+
+		Colorizer colorizer = new Colorizer(fractal.getIterationGrid(), configuration.getIterationRange());
 		colorizer.setMode(mode);
 		colorizer.setColorCollection(colorCollection);
 		colorizer.applyTo(buffer);
@@ -171,7 +178,10 @@ public class Fractal extends JPanel implements Serializable
 
 	public int getIterationRange()
 	{
-		return iterationRange;
+		if (Objects.nonNull(configuration))
+			return configuration.getIterationRange();
+		else
+			return iterationRangeManual;
 	}
 
 	public int getWidthHeight()
@@ -191,19 +201,15 @@ public class Fractal extends JPanel implements Serializable
 
 	public void setIterationRange(int range)
 	{
-		// automatische Iterationtiefen-Anpassung beim Zoom
 		if (range <= 0)
 		{
-			final double base = 1.6;
-			final double minIteration = 40;
-			final double maxIteration = 10000;
-			final double currentImaginaryDiff = Math.abs(maxIm - minIm);
-			final double inverseImaginaryDiff = 1.0 / currentImaginaryDiff;
-			final double iterationAdheringToMin = minIteration * Math.max(1.0, Math.log(inverseImaginaryDiff) / Math.log(base));
-			final double iterationAdheringToMinAndMax = Math.min(maxIteration, iterationAdheringToMin);
-			iterationRange = (int) iterationAdheringToMinAndMax;
-		} else
-			iterationRange = range;
+			iterationRangeMode = IterationRangeMode.AUTOMATIC;
+		}
+		else
+		{
+			iterationRangeManual = range;
+			iterationRangeMode = IterationRangeMode.MANUAL;
+		}
 	}
 
 	public void setColorMode(Colorizer.Mode mode)

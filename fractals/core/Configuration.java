@@ -7,22 +7,50 @@ import java.util.Optional;
 
 public class Configuration
 {
+    public static enum IterationRangeMode {
+        MANUAL, AUTOMATIC
+    }
+
     public final Complex min;
     public final Complex max;
     public final int widthHeight;
-    public final int iterationRange;
+    public final int iterationRangeManual;
+    public final IterationRangeMode iterationRangeMode;
     public final Variant variant;
     public final Optional<Complex> variant_parameter;
     public final int maxThreads;
 
-    public Configuration(Complex min, Complex max, int widthHeight, int iterationRange, Variant variant, Optional<Complex> variant_parameter, int maxThreads) {
+    public Configuration(Complex min, Complex max, int widthHeight, int iterationRangeManual, IterationRangeMode iterationRangeMode, Variant variant, Optional<Complex> variant_parameter, int maxThreads) {
         this.min = min;
         this.max = max;
         this.widthHeight = widthHeight;
-        this.iterationRange = iterationRange;
+        this.iterationRangeManual = iterationRangeManual;
+        this.iterationRangeMode = iterationRangeMode;
         this.variant = variant;
         this.variant_parameter = variant_parameter;
         this.maxThreads = maxThreads;
+    }
+
+    public int getIterationRange()
+    {
+        switch (iterationRangeMode)
+        {
+            case AUTOMATIC: return getAutomaticIterationRange();
+            case MANUAL: return iterationRangeManual;
+            default: return 0;
+        }
+    }
+
+    private int getAutomaticIterationRange()
+    {
+        final double base = 1.6;
+        final double minIteration = 40;
+        final double maxIteration = 10000;
+        final double currentImaginaryDiff = Math.abs(max.getImag() - min.getImag());
+        final double inverseImaginaryDiff = 1.0 / currentImaginaryDiff;
+        final double iterationAdheringToMin = minIteration * Math.max(1.0, Math.log(inverseImaginaryDiff) / Math.log(base));
+        final double iterationAdheringToMinAndMax = Math.min(maxIteration, iterationAdheringToMin);
+        return (int) iterationAdheringToMinAndMax;
     }
 
     public static class Builder 
@@ -30,13 +58,14 @@ public class Configuration
         private Complex min = new Complex(-2.0, -2.0);
         private Complex max = new Complex(+2.0, +2.0);
         private int widthHeight = 1000;
-        private int iterationRange = 40;
+        private int iterationRangeManual = 40;
+        private IterationRangeMode iterationRangeMode = IterationRangeMode.MANUAL;
         private Variant variant = Variant.MANDELBROT;
         private Optional<Complex> variant_parameter = Optional.empty();
         private int maxThreads = Runtime.getRuntime().availableProcessors();
 
         public Configuration build() {
-            return new Configuration(min, max, widthHeight, iterationRange, variant, variant_parameter, maxThreads);
+            return new Configuration(min, max, widthHeight, iterationRangeManual, iterationRangeMode, variant, variant_parameter, maxThreads);
         }
 
         public Builder min(Complex min) {
@@ -54,8 +83,13 @@ public class Configuration
             return this;
         }
 
-        public Builder iterationRange(int iterationRange) {
-            this.iterationRange = iterationRange;
+        public Builder iterationRangeManual(int iterationRangeManual) {
+            this.iterationRangeManual = iterationRangeManual;
+            return this;
+        }
+
+        public Builder iterationRangeMode(IterationRangeMode iterationRangeMode) {
+            this.iterationRangeMode = iterationRangeMode;
             return this;
         }
 

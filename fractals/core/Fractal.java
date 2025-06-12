@@ -118,9 +118,9 @@ public class Fractal
 	private int iterateAt(Complex coordinate)
 	{
 		if ((configuration.variant == Variant.JULIA) && configuration.variant_parameter.isPresent())
-			return Iterator.iterateJulia(coordinate, configuration.variant_parameter.get(), configuration.iterationRange);
+			return Iterator.iterateJulia(coordinate, configuration.variant_parameter.get(), configuration.getIterationRange());
 		else
-			return Iterator.iterateMandelbrot(coordinate, configuration.iterationRange);
+			return Iterator.iterateMandelbrot(coordinate, configuration.getIterationRange());
 	}
 
 	private void updateStatus(int splitSize, int relativeStatus)
