@@ -194,11 +194,14 @@ public class Fractal extends JPanel implements Serializable
 		// automatische Iterationtiefen-Anpassung beim Zoom
 		if (range <= 0)
 		{
-			double quotient = (Math.abs(maxOld - minOld) / (Math.abs(maxIm - minIm)));
-			if (quotient > 1)
-			{
-				iterationRange += (int) quotient * (35 / 4);
-			}
+			final double base = 1.6;
+			final double minIteration = 40;
+			final double maxIteration = 10000;
+			final double currentImaginaryDiff = Math.abs(maxIm - minIm);
+			final double inverseImaginaryDiff = 1.0 / currentImaginaryDiff;
+			final double iterationAdheringToMin = minIteration * Math.max(1.0, Math.log(inverseImaginaryDiff) / Math.log(base));
+			final double iterationAdheringToMinAndMax = Math.min(maxIteration, iterationAdheringToMin);
+			iterationRange = (int) iterationAdheringToMinAndMax;
 		} else
 			iterationRange = range;
 	}
