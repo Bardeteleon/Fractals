@@ -5,10 +5,7 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.ObjectOutputStream;
-import java.io.Serializable;
 import java.util.List;
 import java.util.Optional;
 import java.util.Objects;
@@ -28,7 +25,7 @@ import fractals.core.Variant;
 import fractals.core.Colorizer;
 import fractals.core.Colorizer.Mode;
 
-public class Fractal extends JPanel implements Serializable
+public class Fractal extends JPanel
 {
 	private Complex min, max;
 	private int widthHeight;
@@ -320,30 +317,6 @@ public class Fractal extends JPanel implements Serializable
 			} catch (IOException e)
 			{
 				e.printStackTrace();
-			}
-		}
-		if (destination.getName().toLowerCase().endsWith(".ser"))
-		{
-			FileOutputStream out = null;
-			ObjectOutputStream objout = null;
-			try
-			{
-				out = new FileOutputStream(destination);
-				objout = new ObjectOutputStream(out);
-				objout.writeObject(this);
-			} catch (IOException e)
-			{
-				e.printStackTrace();
-			} finally
-			{
-				try
-				{
-					objout.close();
-					out.close();
-				} catch (IOException e)
-				{
-					e.printStackTrace();
-				}
 			}
 		}
 	}

@@ -342,12 +342,12 @@ public class MFrame extends JFrame
 					@Override
 					public boolean accept(File f)
 					{
-						return f.getName().toLowerCase().endsWith(".png") || f.getName().toLowerCase().endsWith(".ser") || f.isDirectory();
+						return f.getName().toLowerCase().endsWith(".png") || f.isDirectory();
 					}
 					@Override
 					public String getDescription()
 					{
-						return "(*.png) (*.ser)";
+						return "(*.png)";
 					}
 				});
 
