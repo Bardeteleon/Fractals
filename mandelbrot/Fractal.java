@@ -30,7 +30,7 @@ import fractals.core.Colorizer.Mode;
 
 public class Fractal extends JPanel implements Serializable
 {
-	private double maxIm, minIm, maxRe, minRe, maxOld, minOld;
+	private Complex min, max;
 	private int widthHeight;
 	private int iterationRangeManual;
 	private Configuration.IterationRangeMode iterationRangeMode;
@@ -46,7 +46,8 @@ public class Fractal extends JPanel implements Serializable
 
 	public Fractal()
 	{
-		setKoordinates(-2.0, 2.0, -2.0, 2.0);
+		setMinCoordinate(new Complex(-2.0, -2.0));
+		setMaxCoordinate(new Complex(2.0, 2.0));
 		setWidthHeight(700);
 		setIterationRange(40);
 		setColorMode(Colorizer.Mode.BLACK_WHITE);
@@ -55,7 +56,8 @@ public class Fractal extends JPanel implements Serializable
 	public Fractal(double minRe, double maxRe, double minIm, double maxIm, int iterationRange, int widthHeight, Colorizer.Mode mode)
 	{
 
-		setKoordinates(minRe, maxRe, minIm, maxIm);
+		setMinCoordinate(new Complex(minRe, minIm));
+		setMaxCoordinate(new Complex(maxRe, maxIm));
 		setWidthHeight(widthHeight);
 		setIterationRange(iterationRange);
 		setColorMode(mode);
@@ -109,8 +111,8 @@ public class Fractal extends JPanel implements Serializable
 								.iterationRangeMode(iterationRangeMode)
 								.variant(mandelbrotmengePainted ? fractals.core.Variant.MANDELBROT : fractals.core.Variant.JULIA)
 								.variant_parameter(mandelbrotmengePainted ? Optional.empty() : Optional.of(param))
-								.min(new Complex(minRe, minIm))
-								.max(new Complex(maxRe, maxIm))
+								.min(min)
+								.max(max)
 								.build();
 		fractal = new fractals.core.Fractal(configuration);
 		fractal.setFinishCallback(() -> { SwingUtilities.invokeLater(() -> {
@@ -140,14 +142,12 @@ public class Fractal extends JPanel implements Serializable
 		colorizer.applyTo(buffer);
 	}
 
-	public double getKoordinatesRe(int pixel)
+	public Complex getCoordinate(int x, int y)
 	{
-		return minRe + pixel * ((maxRe - minRe) / (widthHeight - 1));
-	}
-
-	public double getKoordinatesIm(int pixel)
-	{
-		return maxIm + pixel * ((minIm - maxIm) / (widthHeight - 1));
+		if (Objects.nonNull(configuration))
+			return configuration.getCoordinate(x, y);
+		else
+			return null;
 	}
 
 	@Override
@@ -158,22 +158,22 @@ public class Fractal extends JPanel implements Serializable
 
 	public double getMinRe()
 	{
-		return minRe;
+		return min.getReal();
 	}
 
 	public double getMaxRe()
 	{
-		return maxRe;
+		return max.getReal();
 	}
 
 	public double getMinIm()
 	{
-		return minIm;
+		return min.getImag();
 	}
 
 	public double getMaxIm()
 	{
-		return maxIm;
+		return max.getImag();
 	}
 
 	public int getIterationRange()
@@ -217,14 +217,14 @@ public class Fractal extends JPanel implements Serializable
 		this.mode = mode;
 	}
 
-	public void setKoordinates(double minRe, double maxRe, double minIm, double maxIm)
+	public void setMinCoordinate(Complex min)
 	{
-		this.maxOld = this.maxIm;
-		this.minOld = this.minIm;
-		this.maxIm = maxIm;
-		this.minIm = minIm;
-		this.maxRe = maxRe;
-		this.minRe = minRe;
+		this.min = min;
+	}
+
+	public void setMaxCoordinate(Complex max)
+	{
+		this.max = max;
 	}
 
 	public void setWidthHeight(int wH)
@@ -279,7 +279,7 @@ public class Fractal extends JPanel implements Serializable
 					@Override
 					public void run()
 					{
-						if (minRe == -2.0 && minIm == -2.0 && maxRe == 2.0 && maxIm == 2.0)
+						if (min.getReal() == -2.0 && min.getImag() == -2.0 && max.getReal() == 2.0 && max.getImag() == 2.0)
 						{
 							Graphics g = buffer.getGraphics();
 							g.setColor(Color.GRAY);

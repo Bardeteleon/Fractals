@@ -41,6 +41,12 @@ public class Configuration
         }
     }
 
+	public Complex getCoordinate(int x, int y)
+	{
+		return new Complex(min.getReal() + x * ((max.getReal() - min.getReal()) / (widthHeight - 1)),
+		                   max.getImag() + y * ((min.getImag() - max.getImag()) / (widthHeight - 1)));
+	}
+
     private int getAutomaticIterationRange()
     {
         final double base = 1.6;
@@ -63,6 +69,18 @@ public class Configuration
         private Variant variant = Variant.MANDELBROT;
         private Optional<Complex> variant_parameter = Optional.empty();
         private int maxThreads = Runtime.getRuntime().availableProcessors();
+
+        public Builder basedOn(Configuration configuration) {
+            this.min = configuration.min;
+            this.max = configuration.max;
+            this.widthHeight = configuration.widthHeight;
+            this.iterationRangeManual = configuration.iterationRangeManual;
+            this.iterationRangeMode = configuration.iterationRangeMode;
+            this.variant = configuration.variant;
+            this.variant_parameter = configuration.variant_parameter;
+            this.maxThreads = configuration.maxThreads;
+            return this;
+        }
 
         public Configuration build() {
             return new Configuration(min, max, widthHeight, iterationRangeManual, iterationRangeMode, variant, variant_parameter, maxThreads);

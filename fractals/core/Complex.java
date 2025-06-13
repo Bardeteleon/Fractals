@@ -1,5 +1,7 @@
 package fractals.core;
 
+import java.util.Objects;
+
 public final class Complex
 {
 	private final double real;
@@ -50,6 +52,15 @@ public final class Complex
 		{
 			return real + " + " + imag + "i";
 		}
+	}
+
+	@Override
+	public boolean equals(Object o)
+	{
+		if (Objects.isNull(o)) return false;
+		if (!(o instanceof Complex)) return false;
+		Complex other = (Complex) o;
+		return this.real == other.real && this.imag == other.imag;
 	}
 
 	public double getReal()

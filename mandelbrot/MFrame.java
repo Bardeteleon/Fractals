@@ -391,21 +391,22 @@ public class MFrame extends JFrame
 			{
 				if ((me.getX() > xPress) && (yPress < me.getY()))
 				{
+					int yMin, xMax;
 					if (me.getX() - xPress > me.getY() - yPress)
 					{
-						fractals.setKoordinates(fractals.getKoordinatesRe(xPress), fractals.getKoordinatesRe(me.getX()), fractals.getKoordinatesIm(yPress + (me.getX() - xPress)), fractals.getKoordinatesIm(yPress));
-						if (iterationCheckBox.isSelected())
-						{
-							fractals.setIterationRange(-1);
-						}
-
-					} else if (me.getX() - xPress < me.getY() - yPress)
+						yMin = yPress + (me.getX() - xPress);
+						xMax = me.getX();
+					} 
+					else
 					{
-						fractals.setKoordinates(fractals.getKoordinatesRe(xPress), fractals.getKoordinatesRe(xPress + (me.getY() - yPress)), fractals.getKoordinatesIm(me.getY()), fractals.getKoordinatesIm(yPress));
-						if (iterationCheckBox.isSelected())
-						{
-							fractals.setIterationRange(-1);
-						}
+						yMin = me.getY();
+						xMax = xPress + (me.getY() - yPress);
+					}
+					fractals.setMinCoordinate(fractals.getCoordinate(xPress, yMin));
+					fractals.setMaxCoordinate(fractals.getCoordinate(xMax, yPress));
+					if (iterationCheckBox.isSelected())
+					{
+						fractals.setIterationRange(-1);
 					}
 					fractals.removeMouseListener(fpl);
 					fractals.removeMouseMotionListener(fpl);
@@ -428,9 +429,10 @@ public class MFrame extends JFrame
 					repaintButton.setText("Abbrechen!");
 					fractals.removeMouseListener(fpl);
 					fractals.removeMouseMotionListener(fpl);
-					fractals.setKoordinates(-2.0, 2.0, -2.0, 2.0);
+					fractals.setMinCoordinate(new Complex(-2.0, -2.0));
+					fractals.setMaxCoordinate(new Complex(2.0, 2.0));
 					fractals.setIterationRange(40);
-					fractals.paintFractals(new Complex(fractals.getKoordinatesRe(me.getX()), fractals.getKoordinatesIm(me.getY())), progressBar);
+					fractals.paintFractals(fractals.getCoordinate(me.getX(), me.getY()), progressBar);
 					juliaCheckBox.setSelected(true);
 				}
 				if (SwingUtilities.isRightMouseButton(me))
@@ -438,7 +440,8 @@ public class MFrame extends JFrame
 					repaintButton.setText("Abbrechen!");
 					fractals.removeMouseListener(fpl);
 					fractals.removeMouseMotionListener(fpl);
-					fractals.setKoordinates(-2.0, 2.0, -2.0, 2.0);
+					fractals.setMinCoordinate(new Complex(-2.0, -2.0));
+					fractals.setMaxCoordinate(new Complex(2.0, 2.0));
 					fractals.setIterationRange(40);
 					fractals.paintFractals(null, progressBar);
 					juliaCheckBox.setSelected(false);
@@ -450,7 +453,8 @@ public class MFrame extends JFrame
 					repaintButton.setText("Abbrechen!");
 					fractals.removeMouseListener(fpl);
 					fractals.removeMouseMotionListener(fpl);
-					fractals.setKoordinates(-2.0, 2.0, -2.0, 2.0);
+					fractals.setMinCoordinate(new Complex(-2.0, -2.0));
+					fractals.setMaxCoordinate(new Complex(2.0, 2.0));
 					fractals.setIterationRange(40);
 					fractals.paintFractals(null, progressBar);
 					juliaCheckBox.setSelected(false);
@@ -460,7 +464,8 @@ public class MFrame extends JFrame
 					repaintButton.setText("Abbrechen!");
 					fractals.removeMouseListener(fpl);
 					fractals.removeMouseMotionListener(fpl);
-					fractals.setKoordinates(-2.0, 2.0, -2.0, 2.0);
+					fractals.setMinCoordinate(new Complex(-2.0, -2.0));
+					fractals.setMaxCoordinate(new Complex(2.0, 2.0));
 					fractals.setIterationRange(40);
 					fractals.paintFractals(fractals.getParamC(), progressBar);
 					juliaCheckBox.setSelected(true);
@@ -475,8 +480,9 @@ public class MFrame extends JFrame
 			// anzeigen lassen
 			if (!juliaCheckBox.isSelected())
 			{
-				reelField1.setText("" + fractals.getKoordinatesRe(me.getX()));
-				imagField1.setText("" + fractals.getKoordinatesIm(me.getY()));
+				final Complex coordinate = fractals.getCoordinate(me.getX(), me.getY());
+				reelField1.setText("" + coordinate.getReal());
+				imagField1.setText("" + coordinate.getImag());
 			}
 		}
 
@@ -621,7 +627,8 @@ public class MFrame extends JFrame
 				exceptionTextArea.setText("");
 				try
 				{
-					fractals.setKoordinates(Double.parseDouble(reelField2.getText()), Double.parseDouble(reelField3.getText()), Double.parseDouble(imagField2.getText()), Double.parseDouble(imagField3.getText()));
+					fractals.setMinCoordinate(new Complex(Double.parseDouble(reelField2.getText()), Double.parseDouble(imagField2.getText())));
+					fractals.setMaxCoordinate(new Complex(Double.parseDouble(reelField3.getText()), Double.parseDouble(imagField3.getText())));
 					fractals.setIterationRange(Integer.parseInt(iterationField.getText()));
 					fractals.setWidthHeight(Integer.parseInt(dimensionField.getText()));
 					graphicsPane.setViewportView(buffPanel); // falls die Größe
