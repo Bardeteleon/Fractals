@@ -45,7 +45,7 @@ public class Fractal extends JPanel
 	{
 		setMinCoordinate(new Complex(-2.0, -2.0));
 		setMaxCoordinate(new Complex(2.0, 2.0));
-		setWidthHeight(700);
+		setWidthHeight(1000);
 		setIterationRange(40);
 		setColorMode(Colorizer.Mode.BLACK_WHITE);
 	}

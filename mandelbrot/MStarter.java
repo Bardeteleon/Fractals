@@ -38,7 +38,6 @@ public class MStarter
 				}
 				MFrame wnd = new MFrame();
 				wnd.setExtendedState(JFrame.MAXIMIZED_BOTH);
-				wnd.setSize(800, 600);
 				wnd.setLocationRelativeTo(null);
 				wnd.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 				wnd.setVisible(true);
