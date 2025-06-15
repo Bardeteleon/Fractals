@@ -51,6 +51,7 @@ import fractals.core.Complex;
 import fractals.core.Colorizer.Mode;
 import fractals.user_interface.desktop.FractalPresenter;
 import fractals.user_interface.desktop.MenuBarController;
+import fractals.user_interface.desktop.ColorSelectionController;
 
 public class MFrame extends JFrame
 {
@@ -69,7 +70,7 @@ public class MFrame extends JFrame
 	public JProgressBar progressBar;
 	private JToolBar buttonLeiste;
 	public Component[] panels;
-	private FarbDialogeListener fdl;
+	private ColorSelectionController colorSelectionController;
 	private FractalPresenter fractalPresenter;
 	private FensterListener fl;
 	private OptionListener ol;
@@ -216,16 +217,16 @@ public class MFrame extends JFrame
 		optionPanelRight.add(exceptionTextArea);
 
 		// Farb-Dialog
-		fdl = new FarbDialogeListener();
+		colorSelectionController = new ColorSelectionController(this, fractals.getColorCollection());
 		colorUpdateButton = new JButton("Farbverlauf aktualisieren");
-		colorUpdateButton.addActionListener(fdl);
+		colorUpdateButton.addActionListener(colorSelectionController);
 		colorCollectionSizeButton = new JButton("Anzahl Farben");
-		colorCollectionSizeButton.addActionListener(fdl);
+		colorCollectionSizeButton.addActionListener(colorSelectionController);
 		colorDialog = new JDialog();
 		colorDialog.setResizable(false);
 		colorDialog.setLayout(new BorderLayout());
 		colorCollectionPane = new JScrollPane();
-		colorCollectionPane.setViewportView(setColorCollectionSize(fractals.getColorCollection().length, fdl));
+		colorCollectionPane.setViewportView(setColorCollectionSize(fractals.getColorCollection().length));
 		colorDialog.add(colorCollectionPane, BorderLayout.SOUTH);
 		buttonPanel = new JPanel(new FlowLayout());
 		buttonPanel.setBackground(Color.LIGHT_GRAY);
@@ -233,7 +234,7 @@ public class MFrame extends JFrame
 		buttonPanel.add(colorUpdateButton);
 		colorDialog.add(buttonPanel, BorderLayout.CENTER);
 		colorDialog.setDefaultCloseOperation(WindowConstants.HIDE_ON_CLOSE);
-		colorButton.addActionListener(fdl);
+		colorButton.addActionListener(colorSelectionController);
 
 		content.add(optionPanelRight, BorderLayout.EAST);
 		content.add(buttonLeiste, BorderLayout.NORTH);
@@ -243,7 +244,7 @@ public class MFrame extends JFrame
 
 	}
 
-	public JPanel setColorCollectionSize(int size, FarbDialogeListener fdl)
+	public JPanel setColorCollectionSize(int size)
 	{
 		JPanel panel = new JPanel(new FlowLayout());
 		panel.setBackground(Color.LIGHT_GRAY);
@@ -258,7 +259,7 @@ public class MFrame extends JFrame
 				p.setBackground(background);
 				p.setToolTipText("R " + background.getRed() + ", G " + background.getGreen() + ", B " + background.getBlue());
 			}
-			p.addMouseListener(fdl);
+			p.addMouseListener(colorSelectionController);
 			panel.add(p);
 			panels[i] = p;
 		}
@@ -284,70 +285,6 @@ public class MFrame extends JFrame
 		reelField3.setToolTipText(fractals.getMaxRe() + "");
 	}
 
-
-
-	private class FarbDialogeListener implements MouseListener, ActionListener
-	{
-
-		@Override
-		public void actionPerformed(ActionEvent arg)
-		{
-			String cmd = arg.getActionCommand();
-			if (cmd.equals("Anzahl Farben"))
-			{
-				String eingabe = JOptionPane.showInputDialog(MFrame.this, "Anzahl der Farben");
-				if (eingabe != null)
-				{
-					try
-					{
-						colorCollectionPane.setViewportView(setColorCollectionSize(Integer.parseInt(eingabe), fdl));
-					} catch (NumberFormatException ex)
-					{
-						exceptionTextArea.setText("\n\n Fehler bei der Eingabe\n der Farbanzahl.\n Bitte nur zahlen Eingeben!");
-					}
-				}
-			}
-			if (cmd.equals("Farbverlauf aktualisieren"))
-			{
-				Color[] c = new Color[panels.length];
-				for (int i = 0; i < c.length; i++)
-				{
-					c[i] = panels[i].getBackground();
-				}
-				fractals.setColorCollection(c);
-				colorDialog.setVisible(false);
-			}
-		}
-
-		@Override
-		public void mouseClicked(MouseEvent e)
-		{
-			Color background = new JColorChooser().showDialog(MFrame.this, "Farbauswahl", Color.CYAN);
-			if (background != null)
-			{
-				e.getComponent().setBackground(background);
-				((JComponent) e.getComponent()).setToolTipText("R " + background.getRed() + ", G " + background.getGreen() + ", B " + background.getBlue());
-			}
-		}
-
-		public void mouseEntered(MouseEvent e)
-		{
-		}
-
-		public void mouseExited(MouseEvent e)
-		{
-		}
-
-		public void mousePressed(MouseEvent e)
-		{
-		}
-
-		public void mouseReleased(MouseEvent e)
-		{
-		}
-
-	}
-
 	private class OptionListener implements ActionListener, ItemListener
 	{
 		public void actionPerformed(ActionEvent e)
@@ -365,6 +302,7 @@ public class MFrame extends JFrame
 					fractals.setMaxCoordinate(new Complex(Double.parseDouble(reelField3.getText()), Double.parseDouble(imagField3.getText())));
 					fractals.setIterationRange(Integer.parseInt(iterationField.getText()));
 					fractals.setWidthHeight(Integer.parseInt(dimensionField.getText()));
+					fractals.setColorCollection(colorSelectionController.getSelection());
 					graphicsPane.setViewportView(buffPanel); // falls die Größe
 																// des Fractals
 																// Objekts
