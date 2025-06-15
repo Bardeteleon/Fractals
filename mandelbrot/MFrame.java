@@ -49,6 +49,7 @@ import javax.swing.filechooser.FileFilter;
 
 import fractals.core.Complex;
 import fractals.core.Colorizer.Mode;
+import fractals.user_interface.desktop.FractalPresenter;
 
 public class MFrame extends JFrame
 {
@@ -68,7 +69,7 @@ public class MFrame extends JFrame
 	private JToolBar buttonLeiste;
 	public Component[] panels;
 	private FarbDialogeListener fdl;
-	private FraktalPanelListener fpl;
+	private FractalPresenter fractalPresenter;
 	private FensterListener fl;
 	private OptionListener ol;
 	private MenuBarListener mbl;
@@ -86,10 +87,9 @@ public class MFrame extends JFrame
 		addWindowListener(fl);
 
 		// ZeichenPane(Center)
-		fpl = new FraktalPanelListener();
 		fractals = new Fractal();
-		fractals.addMouseMotionListener(fpl);
-		fractals.addMouseListener(fpl);
+		fractalPresenter = new FractalPresenter(fractals, this);
+		fractalPresenter.setInteractive(true);
 		buffPanel = new JPanel();
 		buffPanel.add(fractals);
 		graphicsPane = new JScrollPane();
@@ -294,7 +294,7 @@ public class MFrame extends JFrame
 		return new String(data);
 	}
 	
-	private void setAktTextFieldText()
+	public void setAktTextFieldText()
 	{
 		iterationField.setText(fractals.getIterationRange() + "");
 		dimensionField.setText(fractals.getWidthHeight() + "");
@@ -367,189 +367,6 @@ public class MFrame extends JFrame
 		}
 	}
 
-	private class FraktalPanelListener implements MouseListener, MouseMotionListener
-	{
-
-		private int xPress, yPress, xOld, yOld, checker;
-
-		public void mousePressed(MouseEvent me)
-		{
-			// temporäre Daten für Zoom-Funktion, Zoom-Quadrat
-			if (SwingUtilities.isLeftMouseButton(me))
-			{
-				xPress = me.getX();
-				yPress = me.getY();
-				xOld = me.getX();
-				yOld = me.getY();
-			}
-		}
-
-		public void mouseReleased(MouseEvent me)
-		{
-			// Zoom-Funktion
-			if (SwingUtilities.isLeftMouseButton(me))
-			{
-				if ((me.getX() > xPress) && (yPress < me.getY()))
-				{
-					int yMin, xMax;
-					if (me.getX() - xPress > me.getY() - yPress)
-					{
-						yMin = yPress + (me.getX() - xPress);
-						xMax = me.getX();
-					} 
-					else
-					{
-						yMin = me.getY();
-						xMax = xPress + (me.getY() - yPress);
-					}
-					fractals.setMinCoordinate(fractals.getCoordinate(xPress, yMin));
-					fractals.setMaxCoordinate(fractals.getCoordinate(xMax, yPress));
-					if (iterationCheckBox.isSelected())
-					{
-						fractals.setIterationRange(-1);
-					}
-					fractals.removeMouseListener(fpl);
-					fractals.removeMouseMotionListener(fpl);
-					repaintButton.setText("Abbrechen!");
-					if (fractals.mandelbrotmengePainted)
-						fractals.paintFractals(null, progressBar);
-					else
-						fractals.paintFractals(fractals.getParamC(), progressBar);
-				}
-				setAktTextFieldText();
-			}
-		}
-
-		public void mouseClicked(MouseEvent me)
-		{
-			if (fractals.mandelbrotmengePainted)
-			{
-				if (SwingUtilities.isLeftMouseButton(me))
-				{
-					repaintButton.setText("Abbrechen!");
-					fractals.removeMouseListener(fpl);
-					fractals.removeMouseMotionListener(fpl);
-					fractals.setMinCoordinate(new Complex(-2.0, -2.0));
-					fractals.setMaxCoordinate(new Complex(2.0, 2.0));
-					fractals.setIterationRange(40);
-					fractals.paintFractals(fractals.getCoordinate(me.getX(), me.getY()), progressBar);
-					juliaCheckBox.setSelected(true);
-				}
-				if (SwingUtilities.isRightMouseButton(me))
-				{
-					repaintButton.setText("Abbrechen!");
-					fractals.removeMouseListener(fpl);
-					fractals.removeMouseMotionListener(fpl);
-					fractals.setMinCoordinate(new Complex(-2.0, -2.0));
-					fractals.setMaxCoordinate(new Complex(2.0, 2.0));
-					fractals.setIterationRange(40);
-					fractals.paintFractals(null, progressBar);
-					juliaCheckBox.setSelected(false);
-				}
-			} else
-			{
-				if (SwingUtilities.isLeftMouseButton(me))
-				{
-					repaintButton.setText("Abbrechen!");
-					fractals.removeMouseListener(fpl);
-					fractals.removeMouseMotionListener(fpl);
-					fractals.setMinCoordinate(new Complex(-2.0, -2.0));
-					fractals.setMaxCoordinate(new Complex(2.0, 2.0));
-					fractals.setIterationRange(40);
-					fractals.paintFractals(null, progressBar);
-					juliaCheckBox.setSelected(false);
-				}
-				if (SwingUtilities.isRightMouseButton(me))
-				{
-					repaintButton.setText("Abbrechen!");
-					fractals.removeMouseListener(fpl);
-					fractals.removeMouseMotionListener(fpl);
-					fractals.setMinCoordinate(new Complex(-2.0, -2.0));
-					fractals.setMaxCoordinate(new Complex(2.0, 2.0));
-					fractals.setIterationRange(40);
-					fractals.paintFractals(fractals.getParamC(), progressBar);
-					juliaCheckBox.setSelected(true);
-				}
-			}
-			setAktTextFieldText();
-		}
-
-		public void mouseMoved(MouseEvent me)
-		{
-			// aktuelle Koordinaten des Cursers in den jeweiligen TextFeldern
-			// anzeigen lassen
-			if (!juliaCheckBox.isSelected())
-			{
-				final Complex coordinate = fractals.getCoordinate(me.getX(), me.getY());
-				reelField1.setText("" + coordinate.getReal());
-				imagField1.setText("" + coordinate.getImag());
-			}
-		}
-
-		public void mouseDragged(MouseEvent me)
-		{
-			if (SwingUtilities.isLeftMouseButton(me))
-			{
-				// Zoom-Quadrat bei gedrückter Maus
-				// Anzeige nur im 4.Quadranten (wenn die Koordinate, die
-				// gedrückt wird, den Ursprung darstellt)
-				if ((me.getX() > xPress) && (yPress < me.getY()))
-				{
-					// Einteilung der Zeichenoperation in 2Fälle(um immer ein
-					// Quadrat zu zeichnen und kein Rechteck)
-					// 1Fall: x-Länge ist größer als die y-Länge des gezogenen
-					// Rechtecks(mit der Maus wird mit hoher Wahrscheinlichkeit
-					// ein Rechteck gezogen)->x-Länge=QuadratSeitenLänge
-					if ((me.getX() - xPress) > (me.getY() - yPress))
-					{
-						// Falls ein Wechsel zwischen den Fällen stattfindet
-						// muss die Zeichenoperation des 1Falls nochmal
-						// ausgeführt werden um das Quadrat verschwinden zu
-						// lassen, ansonsten gibt es Überlappungen
-						if (checker == 2)
-						{
-							fractals.paintZoomRec(xPress, yPress, yOld - yPress);
-							fractals.paintZoomRec(xPress, yPress, xOld - xPress);
-						}
-						fractals.paintZoomRec(xPress, yPress, xOld - xPress);
-						xOld = me.getX();
-						fractals.paintZoomRec(xPress, yPress, xOld - xPress);
-						checker = 1;
-					}
-					// 2Fall: y-Länge > x-Länge des gezogenen
-					// Rechtecks->y-Länge=QuadratSeitenLänge
-					else
-					{
-						if ((me.getX() - xPress) < (me.getY() - yPress))
-						{
-							// Falls ein Wechsel zwischen den Fällen stattfindet
-							// muss die Zeichenoperation des 1Falls nochmal
-							// ausgeführt werden um das Quadrat verschwinden zu
-							// lassen, ansonsten gibt es Überlappungen
-							if (checker == 1)
-							{
-								fractals.paintZoomRec(xPress, yPress, xOld - xPress);
-								fractals.paintZoomRec(xPress, yPress, yOld - yPress);
-							}
-							fractals.paintZoomRec(xPress, yPress, yOld - yPress);
-							yOld = me.getY();
-							fractals.paintZoomRec(xPress, yPress, yOld - yPress);
-							checker = 2;
-						}
-					}
-
-				}
-			}
-		}
-
-		public void mouseEntered(MouseEvent me)
-		{
-		}
-
-		public void mouseExited(MouseEvent me)
-		{
-		}
-	}
 
 	private class FarbDialogeListener implements MouseListener, ActionListener
 	{
@@ -622,8 +439,7 @@ public class MFrame extends JFrame
 			if (cmd.equals("Neu Zeichnen"))
 			{
 				repaintButton.setText("Abbrechen!");
-				fractals.removeMouseListener(fpl);
-				fractals.removeMouseMotionListener(fpl);
+				fractalPresenter.setInteractive(false);
 				exceptionTextArea.setText("");
 				try
 				{
@@ -726,14 +542,7 @@ public class MFrame extends JFrame
 				JProgressBar bar = (JProgressBar) c.getSource();
 				if (bar.getValue() == 100)
 				{
-					if (fractals.getMouseListeners().length < 1)
-					{
-						fractals.addMouseListener(fpl);
-					}
-					if (fractals.getMouseMotionListeners().length < 1)
-					{
-						fractals.addMouseMotionListener(fpl);
-					}
+					fractalPresenter.setInteractive(true);
 					repaintButton.setText("Neu Zeichnen");
 				}
 			}
