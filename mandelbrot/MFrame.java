@@ -50,6 +50,7 @@ import javax.swing.filechooser.FileFilter;
 import fractals.core.Complex;
 import fractals.core.Colorizer.Mode;
 import fractals.user_interface.desktop.FractalPresenter;
+import fractals.user_interface.desktop.MenuBarController;
 
 public class MFrame extends JFrame
 {
@@ -72,7 +73,7 @@ public class MFrame extends JFrame
 	private FractalPresenter fractalPresenter;
 	private FensterListener fl;
 	private OptionListener ol;
-	private MenuBarListener mbl;
+	private MenuBarController menuBarController;
 	private Container content;
 	private JFileChooser chooser;
 
@@ -122,15 +123,15 @@ public class MFrame extends JFrame
 		buttonLeiste = new JToolBar();
 		buttonLeiste.setBackground(Color.WHITE);
 		buttonLeiste.setLayout(new FlowLayout(FlowLayout.CENTER));
-		mbl = new MenuBarListener();
+		menuBarController = new MenuBarController(fractals, this);
 		optionButton = new JButton("Optionen");
-		optionButton.addActionListener(mbl);
+		optionButton.addActionListener(menuBarController);
 		buttonLeiste.add(optionButton);
 		helpButton = new JButton("Hilfe");
-		helpButton.addActionListener(mbl);
+		helpButton.addActionListener(menuBarController);
 		buttonLeiste.add(helpButton);
 		saveButton = new JButton("Speichern");
-		saveButton.addActionListener(mbl);
+		saveButton.addActionListener(menuBarController);
 		buttonLeiste.add(saveButton);
 
 		// OptionPanelRight
@@ -263,36 +264,6 @@ public class MFrame extends JFrame
 		}
 		return panel;
 	}
-
-	private String dateiLaden(String name)
-	{
-		InputStream stream = this.getClass().getResourceAsStream(name);
-		char[] data = null;
-		if (stream != null)
-		{
-			InputStreamReader reader = new InputStreamReader(stream);
-			try
-			{
-				int size = stream.available();
-				data = new char[size];
-				reader.read(data, 0, size);
-			} catch (IOException e)
-			{
-				e.printStackTrace();
-			} finally
-			{
-				try
-				{
-					stream.close();
-					reader.close();
-				} catch (IOException e)
-				{
-					e.printStackTrace();
-				}
-			}
-		}
-		return new String(data);
-	}
 	
 	public void setAktTextFieldText()
 	{
@@ -313,59 +284,6 @@ public class MFrame extends JFrame
 		reelField3.setToolTipText(fractals.getMaxRe() + "");
 	}
 
-	private class MenuBarListener implements ActionListener
-	{
-
-		public void actionPerformed(ActionEvent e)
-		{
-
-			String cmd = e.getActionCommand();
-			if (cmd.equals("Optionen"))
-			{
-				// macht das Optionen Panel sichtbar
-				if (optionPanelRight.isVisible())
-				{
-					optionPanelRight.setVisible(false);
-				} else
-				{
-					optionPanelRight.setVisible(true);
-				}
-			}
-			if (cmd.equals("Speichern"))
-			{
-				chooser = new JFileChooser();
-				chooser.setFileHidingEnabled(true);
-				chooser.setDialogTitle("Speichern");
-				chooser.setMultiSelectionEnabled(false);
-				chooser.setFileFilter(new FileFilter()
-				{
-					@Override
-					public boolean accept(File f)
-					{
-						return f.getName().toLowerCase().endsWith(".png") || f.isDirectory();
-					}
-					@Override
-					public String getDescription()
-					{
-						return "(*.png)";
-					}
-				});
-
-				if (chooser.showSaveDialog(MFrame.this) == JFileChooser.APPROVE_OPTION)
-				{
-					String path = chooser.getSelectedFile().getPath();
-					if (path != null)
-					{
-						fractals.store(new File(path));
-					}
-				}
-			}
-			if (cmd.equals("Hilfe"))
-			{
-				JOptionPane.showMessageDialog(MFrame.this, dateiLaden("Hilfe.txt"), "Hilfe", JOptionPane.INFORMATION_MESSAGE);
-			}
-		}
-	}
 
 
 	private class FarbDialogeListener implements MouseListener, ActionListener
