@@ -20,6 +20,16 @@ public class ConfigurationController implements ActionListener, ItemListener
         this.frame = frame;
     }
 
+    public void makeInteractive()
+    {
+        frame.repaintButton.addActionListener(this);
+        frame.juliaCheckBox.addActionListener(this);
+        frame.iterationCheckBox.addActionListener(this);
+        frame.complexPlaneCheckBox.addActionListener(this);
+        frame.colorModeChooser.addItemListener(this);
+        frame.colorButton.addActionListener(this);
+    }
+
     public void actionPerformed(ActionEvent e)
     {
         String cmd = e.getActionCommand();

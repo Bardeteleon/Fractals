@@ -22,6 +22,13 @@ public class MenuBarController implements ActionListener
         this.frame = frame;
     }
 
+    public void makeInteractive()
+    {
+        frame.optionButton.addActionListener(this);
+        frame.saveButton.addActionListener(this);
+        frame.helpButton.addActionListener(this);
+    }
+
     @Override
     public void actionPerformed(ActionEvent e)
     {

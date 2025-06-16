@@ -18,6 +18,12 @@ public class WindowController extends WindowAdapter implements ChangeListener
         this.frame = frame;
     }
 
+    public void makeInteractive()
+    {
+		frame.addWindowListener(this);
+		frame.progressBar.addChangeListener(this);
+    }
+
     @Override
     public void windowClosing(WindowEvent e)
     {

@@ -86,12 +86,10 @@ public class MFrame extends JFrame
 		content = this.getContentPane();
 		content.setLayout(new BorderLayout());
 		windowController = new WindowController(this);
-		addWindowListener(windowController);
 
 		// ZeichenPane(Center)
 		fractals = new Fractal();
 		fractalPresenter = new FractalPresenter(fractals, this);
-		fractalPresenter.setInteractive(true);
 		buffPanel = new JPanel();
 		buffPanel.add(fractals);
 		graphicsPane = new JScrollPane();
@@ -113,7 +111,6 @@ public class MFrame extends JFrame
 		progressBar = new JProgressBar(SwingConstants.HORIZONTAL, 0, 100);
 		progressBar.setStringPainted(true);
 		progressBar.setString("Fertig!");
-		progressBar.addChangeListener(windowController);
 		progressBar.setPreferredSize(new Dimension(300, 25));
 		ladeBalkenPanel.add(progressBar);
 		southPanel = new JPanel(new GridLayout(1, 2));
@@ -126,13 +123,10 @@ public class MFrame extends JFrame
 		buttonLeiste.setLayout(new FlowLayout(FlowLayout.CENTER));
 		menuBarController = new MenuBarController(fractals, this);
 		optionButton = new JButton("Optionen");
-		optionButton.addActionListener(menuBarController);
 		buttonLeiste.add(optionButton);
 		helpButton = new JButton("Hilfe");
-		helpButton.addActionListener(menuBarController);
 		buttonLeiste.add(helpButton);
 		saveButton = new JButton("Speichern");
-		saveButton.addActionListener(menuBarController);
 		buttonLeiste.add(saveButton);
 
 		// OptionPanelRight
@@ -144,21 +138,17 @@ public class MFrame extends JFrame
 		repaintPanel = new JPanel();
 		configurationController = new ConfigurationController(fractals, this);
 		repaintButton = new JButton("Neu Zeichnen");
-		repaintButton.addActionListener(configurationController);
 		repaintPanel.add(repaintButton);
 		optionPanelRight.add(repaintPanel);
 
 		checkBoxPanel = new JPanel(new GridLayout(3, 1, 5, 5));
 		juliaCheckBox = new JCheckBox("JuliaMenge");
 		juliaCheckBox.setToolTipText("Bei Auswahl wird die Julia Menge entsprechend der eingegebenen Koordinaten gezeichnet");
-		juliaCheckBox.addActionListener(configurationController);
 		iterationCheckBox = new JCheckBox("ZoomAnpassung");
 		iterationCheckBox.setToolTipText("Die Iterationszahl wird beim zoomen automatisch erhöht.");
 		iterationCheckBox.setSelected(true);
-		iterationCheckBox.addActionListener(configurationController);
 		complexPlaneCheckBox = new JCheckBox("GaußscheZahlenebene");
 		complexPlaneCheckBox.setToolTipText("Gaußsche Zahlenebene beim nächsten Neu Zeichnen ein-/ausblenden (nur beim Standrad-Intervall möglich)");
-		complexPlaneCheckBox.addActionListener(configurationController);
 		checkBoxPanel.add(juliaCheckBox);
 		checkBoxPanel.add(complexPlaneCheckBox);
 		checkBoxPanel.add(iterationCheckBox);
@@ -203,11 +193,9 @@ public class MFrame extends JFrame
 		String[] comboBoxContent = {"Schwarz Weiß", "Schwarz Weiß Modulo", "Farbabstufungen"};
 		colorModeChooser = new JComboBox(comboBoxContent);
 		colorModeChooser.setMaximumSize(new Dimension(150, 18));
-		colorModeChooser.addItemListener(configurationController);
 		colorModePanel.setMaximumSize(new Dimension(500, 30));
 		colorModePanel.add(colorModeChooser);
 		colorButton = new JButton("Farbverlauf");
-		colorButton.addActionListener(configurationController);
 		colorButton.setEnabled(false);
 		colorModePanel.add(colorButton);
 		optionPanelRight.add(colorModePanel);
@@ -219,9 +207,7 @@ public class MFrame extends JFrame
 		// Farb-Dialog
 		colorSelectionController = new ColorSelectionController(this, fractals.getColorCollection());
 		colorUpdateButton = new JButton("Farbverlauf aktualisieren");
-		colorUpdateButton.addActionListener(colorSelectionController);
 		colorCollectionSizeButton = new JButton("Anzahl Farben");
-		colorCollectionSizeButton.addActionListener(colorSelectionController);
 		colorDialog = new JDialog();
 		colorDialog.setResizable(false);
 		colorDialog.setLayout(new BorderLayout());
@@ -234,7 +220,6 @@ public class MFrame extends JFrame
 		buttonPanel.add(colorUpdateButton);
 		colorDialog.add(buttonPanel, BorderLayout.CENTER);
 		colorDialog.setDefaultCloseOperation(WindowConstants.HIDE_ON_CLOSE);
-		colorButton.addActionListener(colorSelectionController);
 
 		content.add(optionPanelRight, BorderLayout.EAST);
 		content.add(buttonLeiste, BorderLayout.NORTH);
@@ -242,6 +227,11 @@ public class MFrame extends JFrame
 		content.add(graphicsPane, BorderLayout.CENTER);
 		pack();
 
+		windowController.makeInteractive();
+		menuBarController.makeInteractive();
+		configurationController.makeInteractive();
+		colorSelectionController.makeInteractive();
+		fractalPresenter.setInteractive(true);
 	}
 
 	public JPanel setColorCollectionSize(int size)

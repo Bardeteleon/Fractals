@@ -20,6 +20,13 @@ public class ColorSelectionController implements MouseListener, ActionListener
         this.selection = initSelection;
     }
 
+    public void makeInteractive()
+    {
+		frame.colorUpdateButton.addActionListener(this);
+		frame.colorCollectionSizeButton.addActionListener(this);
+		frame.colorButton.addActionListener(this);
+    }
+
     public Color[] getSelection()
     {
         return selection;
