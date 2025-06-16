@@ -53,6 +53,7 @@ import fractals.user_interface.desktop.FractalPresenter;
 import fractals.user_interface.desktop.MenuBarController;
 import fractals.user_interface.desktop.ColorSelectionController;
 import fractals.user_interface.desktop.ConfigurationController;
+import fractals.user_interface.desktop.WindowController;
 
 public class MFrame extends JFrame
 {
@@ -73,21 +74,19 @@ public class MFrame extends JFrame
 	public Component[] panels;
 	public ColorSelectionController colorSelectionController;
 	public FractalPresenter fractalPresenter;
-	private FensterListener fl;
+	private WindowController windowController;
 	private ConfigurationController configurationController;
 	private MenuBarController menuBarController;
 	private Container content;
 	private JFileChooser chooser;
-
-	private boolean withWindowClosingDialog = false;
 
 	public MFrame()
 	{
 		super("Fractal v2.0");
 		content = this.getContentPane();
 		content.setLayout(new BorderLayout());
-		fl = new FensterListener();
-		addWindowListener(fl);
+		windowController = new WindowController(this);
+		addWindowListener(windowController);
 
 		// ZeichenPane(Center)
 		fractals = new Fractal();
@@ -114,7 +113,7 @@ public class MFrame extends JFrame
 		progressBar = new JProgressBar(SwingConstants.HORIZONTAL, 0, 100);
 		progressBar.setStringPainted(true);
 		progressBar.setString("Fertig!");
-		progressBar.addChangeListener(fl);
+		progressBar.addChangeListener(windowController);
 		progressBar.setPreferredSize(new Dimension(300, 25));
 		ladeBalkenPanel.add(progressBar);
 		southPanel = new JPanel(new GridLayout(1, 2));
@@ -284,35 +283,5 @@ public class MFrame extends JFrame
 		reelField2.setToolTipText(fractals.getMinRe() + "");
 		reelField3.setText(fractals.getMaxRe() + "");
 		reelField3.setToolTipText(fractals.getMaxRe() + "");
-	}
-
-	private class FensterListener extends WindowAdapter implements ChangeListener
-	{
-
-		@Override
-		public void windowClosing(WindowEvent e)
-		{
-			int i = withWindowClosingDialog 
-						? JOptionPane.showConfirmDialog(MFrame.this, "Wollen Sie wirklich beenden?", "WindowClosing", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE)
-						: 0;
-			if (i == 0)
-			{
-				System.exit(0);
-			}
-		}
-
-		@Override
-		public void stateChanged(ChangeEvent c)
-		{
-			if (c.getSource() instanceof JProgressBar)
-			{
-				JProgressBar bar = (JProgressBar) c.getSource();
-				if (bar.getValue() == 100)
-				{
-					fractalPresenter.setInteractive(true);
-					repaintButton.setText("Neu Zeichnen");
-				}
-			}
-		}
 	}
 }
