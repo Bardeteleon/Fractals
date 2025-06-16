@@ -51,6 +51,7 @@ import fractals.core.Complex;
 import fractals.core.Colorizer.Mode;
 import fractals.user_interface.desktop.FractalPresenter;
 import fractals.user_interface.desktop.MenuBarController;
+import fractals.user_interface.desktop.MenuBarView;
 import fractals.user_interface.desktop.ColorSelectionController;
 import fractals.user_interface.desktop.ConfigurationController;
 import fractals.user_interface.desktop.WindowController;
@@ -59,7 +60,7 @@ public class MFrame extends JFrame
 {
 
 	public Fractal fractals;
-	public JButton optionButton, repaintButton, saveButton, helpButton, colorButton, colorUpdateButton, colorCollectionSizeButton;
+	public JButton repaintButton, colorButton, colorUpdateButton, colorCollectionSizeButton;
 	public JTextField reelField1, imagField1, reelField2, imagField2, reelField3, imagField3, dimensionField, iterationField;
 	private JLabel koordinatesLabel, imagLabel, minLabel, maxLabel, dimensionLabel, iterationLabel;
 	public JCheckBox juliaCheckBox, iterationCheckBox, complexPlaneCheckBox;
@@ -70,7 +71,7 @@ public class MFrame extends JFrame
 	public JDialog colorDialog;
 	public JTextArea exceptionTextArea;
 	public JProgressBar progressBar;
-	private JToolBar buttonLeiste;
+	public MenuBarView menuBarView;
 	public Component[] panels;
 	public ColorSelectionController colorSelectionController;
 	public FractalPresenter fractalPresenter;
@@ -117,17 +118,8 @@ public class MFrame extends JFrame
 		southPanel.add(koordinatesPanel);
 		southPanel.add(ladeBalkenPanel);
 
-		// ButtonLeiste(North)
-		buttonLeiste = new JToolBar();
-		buttonLeiste.setBackground(Color.WHITE);
-		buttonLeiste.setLayout(new FlowLayout(FlowLayout.CENTER));
+		menuBarView = new MenuBarView();
 		menuBarController = new MenuBarController(fractals, this);
-		optionButton = new JButton("Optionen");
-		buttonLeiste.add(optionButton);
-		helpButton = new JButton("Hilfe");
-		buttonLeiste.add(helpButton);
-		saveButton = new JButton("Speichern");
-		buttonLeiste.add(saveButton);
 
 		// OptionPanelRight
 		optionPanelRight = new JPanel();
@@ -222,7 +214,7 @@ public class MFrame extends JFrame
 		colorDialog.setDefaultCloseOperation(WindowConstants.HIDE_ON_CLOSE);
 
 		content.add(optionPanelRight, BorderLayout.EAST);
-		content.add(buttonLeiste, BorderLayout.NORTH);
+		content.add(menuBarView, BorderLayout.NORTH);
 		content.add(southPanel, BorderLayout.SOUTH);
 		content.add(graphicsPane, BorderLayout.CENTER);
 		pack();
