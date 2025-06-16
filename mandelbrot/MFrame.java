@@ -52,6 +52,7 @@ import fractals.core.Colorizer.Mode;
 import fractals.user_interface.desktop.FractalPresenter;
 import fractals.user_interface.desktop.MenuBarController;
 import fractals.user_interface.desktop.ColorSelectionController;
+import fractals.user_interface.desktop.ConfigurationController;
 
 public class MFrame extends JFrame
 {
@@ -70,10 +71,10 @@ public class MFrame extends JFrame
 	public JProgressBar progressBar;
 	private JToolBar buttonLeiste;
 	public Component[] panels;
-	private ColorSelectionController colorSelectionController;
-	private FractalPresenter fractalPresenter;
+	public ColorSelectionController colorSelectionController;
+	public FractalPresenter fractalPresenter;
 	private FensterListener fl;
-	private OptionListener ol;
+	private ConfigurationController configurationController;
 	private MenuBarController menuBarController;
 	private Container content;
 	private JFileChooser chooser;
@@ -142,23 +143,23 @@ public class MFrame extends JFrame
 		optionPanelRight.setBackground(Color.WHITE);
 
 		repaintPanel = new JPanel();
-		ol = new OptionListener();
+		configurationController = new ConfigurationController(fractals, this);
 		repaintButton = new JButton("Neu Zeichnen");
-		repaintButton.addActionListener(ol);
+		repaintButton.addActionListener(configurationController);
 		repaintPanel.add(repaintButton);
 		optionPanelRight.add(repaintPanel);
 
 		checkBoxPanel = new JPanel(new GridLayout(3, 1, 5, 5));
 		juliaCheckBox = new JCheckBox("JuliaMenge");
 		juliaCheckBox.setToolTipText("Bei Auswahl wird die Julia Menge entsprechend der eingegebenen Koordinaten gezeichnet");
-		juliaCheckBox.addActionListener(ol);
+		juliaCheckBox.addActionListener(configurationController);
 		iterationCheckBox = new JCheckBox("ZoomAnpassung");
 		iterationCheckBox.setToolTipText("Die Iterationszahl wird beim zoomen automatisch erhöht.");
 		iterationCheckBox.setSelected(true);
-		iterationCheckBox.addActionListener(ol);
+		iterationCheckBox.addActionListener(configurationController);
 		complexPlaneCheckBox = new JCheckBox("GaußscheZahlenebene");
 		complexPlaneCheckBox.setToolTipText("Gaußsche Zahlenebene beim nächsten Neu Zeichnen ein-/ausblenden (nur beim Standrad-Intervall möglich)");
-		complexPlaneCheckBox.addActionListener(ol);
+		complexPlaneCheckBox.addActionListener(configurationController);
 		checkBoxPanel.add(juliaCheckBox);
 		checkBoxPanel.add(complexPlaneCheckBox);
 		checkBoxPanel.add(iterationCheckBox);
@@ -203,11 +204,11 @@ public class MFrame extends JFrame
 		String[] comboBoxContent = {"Schwarz Weiß", "Schwarz Weiß Modulo", "Farbabstufungen"};
 		colorModeChooser = new JComboBox(comboBoxContent);
 		colorModeChooser.setMaximumSize(new Dimension(150, 18));
-		colorModeChooser.addItemListener(ol);
+		colorModeChooser.addItemListener(configurationController);
 		colorModePanel.setMaximumSize(new Dimension(500, 30));
 		colorModePanel.add(colorModeChooser);
 		colorButton = new JButton("Farbverlauf");
-		colorButton.addActionListener(ol);
+		colorButton.addActionListener(configurationController);
 		colorButton.setEnabled(false);
 		colorModePanel.add(colorButton);
 		optionPanelRight.add(colorModePanel);
@@ -283,96 +284,6 @@ public class MFrame extends JFrame
 		reelField2.setToolTipText(fractals.getMinRe() + "");
 		reelField3.setText(fractals.getMaxRe() + "");
 		reelField3.setToolTipText(fractals.getMaxRe() + "");
-	}
-
-	private class OptionListener implements ActionListener, ItemListener
-	{
-		public void actionPerformed(ActionEvent e)
-		{
-
-			String cmd = e.getActionCommand();
-			if (cmd.equals("Neu Zeichnen"))
-			{
-				repaintButton.setText("Abbrechen!");
-				fractalPresenter.setInteractive(false);
-				exceptionTextArea.setText("");
-				try
-				{
-					fractals.setMinCoordinate(new Complex(Double.parseDouble(reelField2.getText()), Double.parseDouble(imagField2.getText())));
-					fractals.setMaxCoordinate(new Complex(Double.parseDouble(reelField3.getText()), Double.parseDouble(imagField3.getText())));
-					fractals.setIterationRange(Integer.parseInt(iterationField.getText()));
-					fractals.setWidthHeight(Integer.parseInt(dimensionField.getText()));
-					fractals.setColorCollection(colorSelectionController.getSelection());
-					graphicsPane.setViewportView(buffPanel); // falls die Größe
-																// des Fractals
-																// Objekts
-																// geändert wird
-																// muss sich das
-																// ScrollPane
-																// aktualisieren,
-																// was mit dem
-																// wiederholten
-																// setzen des
-																// Viewports
-																// erreicht wird
-				} catch (NumberFormatException ex)
-				{
-					exceptionTextArea.setText("\n\n Fehler beim Einlesen!\n Mögliche Fehlerquelle:\n -Komma statt Punkt\n als Trennzeichen\n -Buchstaben in der Eingabe ");
-				}
-				if (juliaCheckBox.isSelected())
-				{
-					try
-					{
-						fractals.paintFractals(new Complex(Double.parseDouble(reelField1.getText()), Double.parseDouble(imagField1.getText())), progressBar);
-					} catch (NumberFormatException ex)
-					{
-						exceptionTextArea.setText("\n\n Fehler beim Einlesen!\n Mögliche Fehlerquelle:\n -Komma statt Punkt\n als Trennzeichen\n -Buchstaben in der Eingabe ");
-					}
-				} else
-					fractals.paintFractals(null, progressBar);
-
-				if (complexPlaneCheckBox.isSelected())
-				{
-					fractals.paintKoordinateSystem();
-				}
-				setAktTextFieldText();
-			}
-
-			if (cmd.equals("Abbrechen!"))
-			{
-				fractals.stop();
-				progressBar.setValue(0);
-				progressBar.setString("Abgebrochen!");
-			}
-			if (cmd.equals("Farbverlauf"))
-			{
-				colorDialog.setSize(555, 200);
-				colorDialog.setLocation(getWidth() / 2 - colorDialog.getWidth() / 2, getHeight() / 2 - colorDialog.getHeight() / 2);
-				colorDialog.setVisible(true);
-			}
-
-		}
-
-		public void itemStateChanged(ItemEvent ie)
-		{
-			JComboBox selectedItem = (JComboBox) ie.getSource();
-			if (selectedItem.getSelectedItem().equals("Schwarz Weiß"))
-			{
-				fractals.setColorMode(Mode.BLACK_WHITE);
-			}
-			if (selectedItem.getSelectedItem().equals("Schwarz Weiß Modulo"))
-			{
-				fractals.setColorMode(Mode.BLACK_WHITE_MODULO);
-			}
-			if (selectedItem.getSelectedItem().equals("Farbabstufungen"))
-			{
-				colorButton.setEnabled(true);
-				fractals.setColorMode(Mode.COLOR);
-			} else
-				colorButton.setEnabled(false);
-
-		}
-
 	}
 
 	private class FensterListener extends WindowAdapter implements ChangeListener
