@@ -65,13 +65,13 @@ public class ConfigurationController implements ActionListener, ItemListener
             {
                 try
                 {
-                    fractals.paintFractals(new Complex(Double.parseDouble(frame.reelField1.getText()), Double.parseDouble(frame.imagField1.getText())), frame.progressBar);
+                    fractals.paintFractals(new Complex(Double.parseDouble(frame.statusBarView.reelField1.getText()), Double.parseDouble(frame.statusBarView.imagField1.getText())), frame.statusBarView.progressBar);
                 } catch (NumberFormatException ex)
                 {
                     frame.exceptionTextArea.setText("\n\n Fehler beim Einlesen!\n Mögliche Fehlerquelle:\n -Komma statt Punkt\n als Trennzeichen\n -Buchstaben in der Eingabe ");
                 }
             } else
-                fractals.paintFractals(null, frame.progressBar);
+                fractals.paintFractals(null, frame.statusBarView.progressBar);
 
             if (frame.complexPlaneCheckBox.isSelected())
             {
@@ -83,8 +83,8 @@ public class ConfigurationController implements ActionListener, ItemListener
         if (cmd.equals("Abbrechen!"))
         {
             fractals.stop();
-            frame.progressBar.setValue(0);
-            frame.progressBar.setString("Abgebrochen!");
+            frame.statusBarView.progressBar.setValue(0);
+            frame.statusBarView.progressBar.setString("Abgebrochen!");
         }
         if (cmd.equals("Farbverlauf"))
         {

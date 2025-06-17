@@ -52,6 +52,7 @@ import fractals.core.Colorizer.Mode;
 import fractals.user_interface.desktop.FractalPresenter;
 import fractals.user_interface.desktop.MenuBarController;
 import fractals.user_interface.desktop.MenuBarView;
+import fractals.user_interface.desktop.StatusBarView;
 import fractals.user_interface.desktop.ColorSelectionController;
 import fractals.user_interface.desktop.ConfigurationController;
 import fractals.user_interface.desktop.WindowController;
@@ -61,17 +62,17 @@ public class MFrame extends JFrame
 
 	public Fractal fractals;
 	public JButton repaintButton, colorButton, colorUpdateButton, colorCollectionSizeButton;
-	public JTextField reelField1, imagField1, reelField2, imagField2, reelField3, imagField3, dimensionField, iterationField;
-	private JLabel koordinatesLabel, imagLabel, minLabel, maxLabel, dimensionLabel, iterationLabel;
+	public JTextField reelField2, imagField2, reelField3, imagField3, dimensionField, iterationField;
+	private JLabel minLabel, maxLabel, dimensionLabel, iterationLabel;
 	public JCheckBox juliaCheckBox, iterationCheckBox, complexPlaneCheckBox;
 	public JScrollPane graphicsPane, colorCollectionPane;
 	public JPanel optionPanelRight, buffPanel;
-	private JPanel koordinatesPanel, ladeBalkenPanel, southPanel, repaintPanel, checkBoxPanel, iterationDimensionPanel, intervalPanel, colorModePanel, buttonPanel;
+	private JPanel repaintPanel, checkBoxPanel, iterationDimensionPanel, intervalPanel, colorModePanel, buttonPanel;
 	public JComboBox colorModeChooser;
 	public JDialog colorDialog;
 	public JTextArea exceptionTextArea;
-	public JProgressBar progressBar;
 	public MenuBarView menuBarView;
+	public StatusBarView statusBarView;
 	public Component[] panels;
 	public ColorSelectionController colorSelectionController;
 	public FractalPresenter fractalPresenter;
@@ -98,25 +99,7 @@ public class MFrame extends JFrame
 		graphicsPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 		graphicsPane.setViewportView(buffPanel);
 
-		// Panel(South)
-		koordinatesPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-		koordinatesLabel = new JLabel("Koordinaten: Reel");
-		koordinatesPanel.add(koordinatesLabel);
-		reelField1 = new JTextField(13);
-		koordinatesPanel.add(reelField1);
-		imagLabel = new JLabel("Imag");
-		koordinatesPanel.add(imagLabel);
-		imagField1 = new JTextField(13);
-		koordinatesPanel.add(imagField1);
-		ladeBalkenPanel = new JPanel();
-		progressBar = new JProgressBar(SwingConstants.HORIZONTAL, 0, 100);
-		progressBar.setStringPainted(true);
-		progressBar.setString("Fertig!");
-		progressBar.setPreferredSize(new Dimension(300, 25));
-		ladeBalkenPanel.add(progressBar);
-		southPanel = new JPanel(new GridLayout(1, 2));
-		southPanel.add(koordinatesPanel);
-		southPanel.add(ladeBalkenPanel);
+		statusBarView = new StatusBarView();
 
 		menuBarView = new MenuBarView();
 		menuBarController = new MenuBarController(fractals, this);
@@ -215,7 +198,7 @@ public class MFrame extends JFrame
 
 		content.add(optionPanelRight, BorderLayout.EAST);
 		content.add(menuBarView, BorderLayout.NORTH);
-		content.add(southPanel, BorderLayout.SOUTH);
+		content.add(statusBarView, BorderLayout.SOUTH);
 		content.add(graphicsPane, BorderLayout.CENTER);
 		pack();
 
@@ -254,8 +237,8 @@ public class MFrame extends JFrame
 		dimensionField.setText(fractals.getWidthHeight() + "");
 		if (fractals.getParamC() != null)
 		{
-			imagField1.setText("" + fractals.getParamC().getImag());
-			reelField1.setText("" + fractals.getParamC().getReal());
+			statusBarView.imagField1.setText("" + fractals.getParamC().getImag());
+			statusBarView.reelField1.setText("" + fractals.getParamC().getReal());
 		}
 		imagField2.setText(fractals.getMinIm() + "");
 		imagField2.setToolTipText(fractals.getMinIm() + "");
