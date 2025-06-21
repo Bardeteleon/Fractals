@@ -88,9 +88,9 @@ public class ConfigurationController implements ActionListener, ItemListener
         }
         if (cmd.equals("Farbverlauf"))
         {
-            frame.colorDialog.setSize(555, 200);
-            frame.colorDialog.setLocation(frame.getWidth() / 2 - frame.colorDialog.getWidth() / 2, frame.getHeight() / 2 - frame.colorDialog.getHeight() / 2);
-            frame.colorDialog.setVisible(true);
+            frame.colorSelectionView.pack();
+            frame.colorSelectionView.setLocationRelativeTo(frame);
+            frame.colorSelectionView.setVisible(true);
         }
 
     }

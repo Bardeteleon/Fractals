@@ -57,21 +57,19 @@ import fractals.user_interface.desktop.ConfigurationView;
 import fractals.user_interface.desktop.ColorSelectionController;
 import fractals.user_interface.desktop.ConfigurationController;
 import fractals.user_interface.desktop.WindowController;
+import fractals.user_interface.desktop.ColorSelectionView;
 
 public class MFrame extends JFrame
 {
 
 	public Fractal fractals;
-	public JButton colorUpdateButton, colorCollectionSizeButton;
 	public JCheckBox complexPlaneCheckBox;
-	public JScrollPane graphicsPane, colorCollectionPane;
+	public JScrollPane graphicsPane;
 	public JPanel buffPanel;
-	private JPanel buttonPanel;
-	public JDialog colorDialog;
 	public MenuBarView menuBarView;
 	public StatusBarView statusBarView;
 	public ConfigurationView configurationView;
-	public Component[] panels;
+	public ColorSelectionView colorSelectionView;
 	public ColorSelectionController colorSelectionController;
 	public FractalPresenter fractalPresenter;
 	private WindowController windowController;
@@ -106,21 +104,8 @@ public class MFrame extends JFrame
 		configurationController = new ConfigurationController(fractals, this);
 
 		// Farb-Dialog
-		colorSelectionController = new ColorSelectionController(this, fractals.getColorCollection());
-		colorUpdateButton = new JButton("Farbverlauf aktualisieren");
-		colorCollectionSizeButton = new JButton("Anzahl Farben");
-		colorDialog = new JDialog();
-		colorDialog.setResizable(false);
-		colorDialog.setLayout(new BorderLayout());
-		colorCollectionPane = new JScrollPane();
-		colorCollectionPane.setViewportView(setColorCollectionSize(fractals.getColorCollection().length));
-		colorDialog.add(colorCollectionPane, BorderLayout.SOUTH);
-		buttonPanel = new JPanel(new FlowLayout());
-		buttonPanel.setBackground(Color.LIGHT_GRAY);
-		buttonPanel.add(colorCollectionSizeButton);
-		buttonPanel.add(colorUpdateButton);
-		colorDialog.add(buttonPanel, BorderLayout.CENTER);
-		colorDialog.setDefaultCloseOperation(WindowConstants.HIDE_ON_CLOSE);
+		colorSelectionView = new ColorSelectionView(this);
+		colorSelectionController = new ColorSelectionController(colorSelectionView, fractals.getColorCollection(), configurationView);
 
 		content.add(configurationView, BorderLayout.EAST);
 		content.add(menuBarView, BorderLayout.NORTH);
@@ -135,27 +120,7 @@ public class MFrame extends JFrame
 		fractalPresenter.setInteractive(true);
 	}
 
-	public JPanel setColorCollectionSize(int size)
-	{
-		JPanel panel = new JPanel(new FlowLayout());
-		panel.setBackground(Color.LIGHT_GRAY);
-		panels = new Component[size];
-		for (int i = 0; i < size; i++)
-		{
-			JPanel p = new JPanel();
-			p.setPreferredSize(new Dimension(75, 75));
-			if (fractals.getColorCollection().length > i)
-			{
-				Color background = (fractals.getColorCollection())[i];
-				p.setBackground(background);
-				p.setToolTipText("R " + background.getRed() + ", G " + background.getGreen() + ", B " + background.getBlue());
-			}
-			p.addMouseListener(colorSelectionController);
-			panel.add(p);
-			panels[i] = p;
-		}
-		return panel;
-	}
+
 	
 	public void setAktTextFieldText()
 	{
