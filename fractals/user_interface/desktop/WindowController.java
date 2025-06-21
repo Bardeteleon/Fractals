@@ -45,7 +45,7 @@ public class WindowController extends WindowAdapter implements ChangeListener
             if (bar.getValue() == 100)
             {
                 frame.fractalPresenter.setInteractive(true);
-                frame.repaintButton.setText("Neu Zeichnen");
+                frame.configurationView.repaintButton.setText("Neu Zeichnen");
             }
         }
     }

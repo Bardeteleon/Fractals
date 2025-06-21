@@ -53,6 +53,7 @@ import fractals.user_interface.desktop.FractalPresenter;
 import fractals.user_interface.desktop.MenuBarController;
 import fractals.user_interface.desktop.MenuBarView;
 import fractals.user_interface.desktop.StatusBarView;
+import fractals.user_interface.desktop.ConfigurationView;
 import fractals.user_interface.desktop.ColorSelectionController;
 import fractals.user_interface.desktop.ConfigurationController;
 import fractals.user_interface.desktop.WindowController;
@@ -61,18 +62,15 @@ public class MFrame extends JFrame
 {
 
 	public Fractal fractals;
-	public JButton repaintButton, colorButton, colorUpdateButton, colorCollectionSizeButton;
-	public JTextField reelField2, imagField2, reelField3, imagField3, dimensionField, iterationField;
-	private JLabel minLabel, maxLabel, dimensionLabel, iterationLabel;
-	public JCheckBox juliaCheckBox, iterationCheckBox, complexPlaneCheckBox;
+	public JButton colorUpdateButton, colorCollectionSizeButton;
+	public JCheckBox complexPlaneCheckBox;
 	public JScrollPane graphicsPane, colorCollectionPane;
-	public JPanel optionPanelRight, buffPanel;
-	private JPanel repaintPanel, checkBoxPanel, iterationDimensionPanel, intervalPanel, colorModePanel, buttonPanel;
-	public JComboBox colorModeChooser;
+	public JPanel buffPanel;
+	private JPanel buttonPanel;
 	public JDialog colorDialog;
-	public JTextArea exceptionTextArea;
 	public MenuBarView menuBarView;
 	public StatusBarView statusBarView;
+	public ConfigurationView configurationView;
 	public Component[] panels;
 	public ColorSelectionController colorSelectionController;
 	public FractalPresenter fractalPresenter;
@@ -104,80 +102,8 @@ public class MFrame extends JFrame
 		menuBarView = new MenuBarView();
 		menuBarController = new MenuBarController(fractals, this);
 
-		// OptionPanelRight
-		optionPanelRight = new JPanel();
-		optionPanelRight.setVisible(false);
-		optionPanelRight.setLayout(new BoxLayout(optionPanelRight, BoxLayout.Y_AXIS));
-		optionPanelRight.setBackground(Color.WHITE);
-
-		repaintPanel = new JPanel();
+		configurationView = new ConfigurationView(fractals);
 		configurationController = new ConfigurationController(fractals, this);
-		repaintButton = new JButton("Neu Zeichnen");
-		repaintPanel.add(repaintButton);
-		optionPanelRight.add(repaintPanel);
-
-		checkBoxPanel = new JPanel(new GridLayout(3, 1, 5, 5));
-		juliaCheckBox = new JCheckBox("JuliaMenge");
-		juliaCheckBox.setToolTipText("Bei Auswahl wird die Julia Menge entsprechend der eingegebenen Koordinaten gezeichnet");
-		iterationCheckBox = new JCheckBox("ZoomAnpassung");
-		iterationCheckBox.setToolTipText("Die Iterationszahl wird beim zoomen automatisch erhöht.");
-		iterationCheckBox.setSelected(true);
-		complexPlaneCheckBox = new JCheckBox("GaußscheZahlenebene");
-		complexPlaneCheckBox.setToolTipText("Gaußsche Zahlenebene beim nächsten Neu Zeichnen ein-/ausblenden (nur beim Standrad-Intervall möglich)");
-		checkBoxPanel.add(juliaCheckBox);
-		checkBoxPanel.add(complexPlaneCheckBox);
-		checkBoxPanel.add(iterationCheckBox);
-		optionPanelRight.add(checkBoxPanel);
-
-		iterationDimensionPanel = new JPanel(new GridLayout(2, 2, 5, 5));
-		iterationLabel = new JLabel("Iterationstiefe: ");
-		iterationDimensionPanel.add(iterationLabel);
-		iterationField = new JTextField(5);
-		iterationField.setText(fractals.getIterationRange() + "");
-		iterationDimensionPanel.add(iterationField);
-		iterationDimensionPanel.setToolTipText("Größe des zu zeichnenden Bereichs in Pixel(quadratische Form)");
-		dimensionLabel = new JLabel("Größe: ");
-		iterationDimensionPanel.add(dimensionLabel);
-		dimensionField = new JTextField(4);
-		dimensionField.setText(fractals.getWidthHeight() + "");
-		iterationDimensionPanel.add(dimensionField);
-		optionPanelRight.add(iterationDimensionPanel);
-
-		intervalPanel = new JPanel(new GridLayout(2, 3, 5, 5));
-		intervalPanel.setBorder(BorderFactory.createTitledBorder("Intervall"));
-		minLabel = new JLabel("Min: ");
-		intervalPanel.add(minLabel);
-		reelField2 = new JTextField(4);
-		reelField2.setText(fractals.getMinRe() + "");
-		intervalPanel.add(reelField2);
-		imagField2 = new JTextField(4);
-		imagField2.setText(fractals.getMinIm() + "");
-		intervalPanel.add(imagField2);
-		maxLabel = new JLabel("Max: ");
-		intervalPanel.add(maxLabel);
-		reelField3 = new JTextField(4);
-		reelField3.setText(fractals.getMaxRe() + "");
-		intervalPanel.add(reelField3);
-		imagField3 = new JTextField(4);
-		imagField3.setText(fractals.getMaxIm() + "");
-		intervalPanel.add(imagField3);
-		optionPanelRight.add(intervalPanel);
-
-		colorModePanel = new JPanel(new GridLayout(2, 1, 3, 3));
-		colorModePanel.setBorder(BorderFactory.createTitledBorder("Farbmodus"));
-		String[] comboBoxContent = {"Schwarz Weiß", "Schwarz Weiß Modulo", "Farbabstufungen"};
-		colorModeChooser = new JComboBox(comboBoxContent);
-		colorModeChooser.setMaximumSize(new Dimension(150, 18));
-		colorModePanel.setMaximumSize(new Dimension(500, 30));
-		colorModePanel.add(colorModeChooser);
-		colorButton = new JButton("Farbverlauf");
-		colorButton.setEnabled(false);
-		colorModePanel.add(colorButton);
-		optionPanelRight.add(colorModePanel);
-
-		exceptionTextArea = new JTextArea();
-		exceptionTextArea.setEditable(false);
-		optionPanelRight.add(exceptionTextArea);
 
 		// Farb-Dialog
 		colorSelectionController = new ColorSelectionController(this, fractals.getColorCollection());
@@ -196,7 +122,7 @@ public class MFrame extends JFrame
 		colorDialog.add(buttonPanel, BorderLayout.CENTER);
 		colorDialog.setDefaultCloseOperation(WindowConstants.HIDE_ON_CLOSE);
 
-		content.add(optionPanelRight, BorderLayout.EAST);
+		content.add(configurationView, BorderLayout.EAST);
 		content.add(menuBarView, BorderLayout.NORTH);
 		content.add(statusBarView, BorderLayout.SOUTH);
 		content.add(graphicsPane, BorderLayout.CENTER);
@@ -233,20 +159,20 @@ public class MFrame extends JFrame
 	
 	public void setAktTextFieldText()
 	{
-		iterationField.setText(fractals.getIterationRange() + "");
-		dimensionField.setText(fractals.getWidthHeight() + "");
+		configurationView.iterationField.setText(fractals.getIterationRange() + "");
+		configurationView.dimensionField.setText(fractals.getWidthHeight() + "");
 		if (fractals.getParamC() != null)
 		{
 			statusBarView.imagField1.setText("" + fractals.getParamC().getImag());
 			statusBarView.reelField1.setText("" + fractals.getParamC().getReal());
 		}
-		imagField2.setText(fractals.getMinIm() + "");
-		imagField2.setToolTipText(fractals.getMinIm() + "");
-		imagField3.setText(fractals.getMaxIm() + "");
-		imagField3.setToolTipText(fractals.getMaxIm() + "");
-		reelField2.setText(fractals.getMinRe() + "");
-		reelField2.setToolTipText(fractals.getMinRe() + "");
-		reelField3.setText(fractals.getMaxRe() + "");
-		reelField3.setToolTipText(fractals.getMaxRe() + "");
+		configurationView.imagField2.setText(fractals.getMinIm() + "");
+		configurationView.imagField2.setToolTipText(fractals.getMinIm() + "");
+		configurationView.imagField3.setText(fractals.getMaxIm() + "");
+		configurationView.imagField3.setToolTipText(fractals.getMaxIm() + "");
+		configurationView.reelField2.setText(fractals.getMinRe() + "");
+		configurationView.reelField2.setToolTipText(fractals.getMinRe() + "");
+		configurationView.reelField3.setText(fractals.getMaxRe() + "");
+		configurationView.reelField3.setToolTipText(fractals.getMaxRe() + "");
 	}
 }

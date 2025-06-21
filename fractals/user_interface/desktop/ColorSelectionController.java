@@ -24,7 +24,7 @@ public class ColorSelectionController implements MouseListener, ActionListener
     {
 		frame.colorUpdateButton.addActionListener(this);
 		frame.colorCollectionSizeButton.addActionListener(this);
-		frame.colorButton.addActionListener(this);
+		frame.configurationView.colorButton.addActionListener(this);
     }
 
     public Color[] getSelection()
@@ -46,7 +46,7 @@ public class ColorSelectionController implements MouseListener, ActionListener
                     frame.colorCollectionPane.setViewportView(frame.setColorCollectionSize(Integer.parseInt(eingabe)));
                 } catch (NumberFormatException ex)
                 {
-                    frame.exceptionTextArea.setText("\n\n Fehler bei der Eingabe\n der Farbanzahl.\n Bitte nur zahlen Eingeben!");
+                    frame.configurationView.exceptionTextArea.setText("\n\n Fehler bei der Eingabe\n der Farbanzahl.\n Bitte nur zahlen Eingeben!");
                 }
             }
         }

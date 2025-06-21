@@ -35,7 +35,7 @@ public class MenuBarController implements ActionListener
         String cmd = e.getActionCommand();
         if (cmd.equals("Optionen"))
         {
-            frame.optionPanelRight.setVisible(!frame.optionPanelRight.isVisible());
+            frame.configurationView.setVisible(!frame.configurationView.isVisible());
         }
         if (cmd.equals("Speichern"))
         {

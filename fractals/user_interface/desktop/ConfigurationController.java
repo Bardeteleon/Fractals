@@ -22,12 +22,12 @@ public class ConfigurationController implements ActionListener, ItemListener
 
     public void makeInteractive()
     {
-        frame.repaintButton.addActionListener(this);
-        frame.juliaCheckBox.addActionListener(this);
-        frame.iterationCheckBox.addActionListener(this);
-        frame.complexPlaneCheckBox.addActionListener(this);
-        frame.colorModeChooser.addItemListener(this);
-        frame.colorButton.addActionListener(this);
+        frame.configurationView.repaintButton.addActionListener(this);
+        frame.configurationView.juliaCheckBox.addActionListener(this);
+        frame.configurationView.iterationCheckBox.addActionListener(this);
+        frame.configurationView.complexPlaneCheckBox.addActionListener(this);
+        frame.configurationView.colorModeChooser.addItemListener(this);
+        frame.configurationView.colorButton.addActionListener(this);
     }
 
     public void actionPerformed(ActionEvent e)
@@ -35,15 +35,15 @@ public class ConfigurationController implements ActionListener, ItemListener
         String cmd = e.getActionCommand();
         if (cmd.equals("Neu Zeichnen"))
         {
-            frame.repaintButton.setText("Abbrechen!");
+            frame.configurationView.repaintButton.setText("Abbrechen!");
             frame.fractalPresenter.setInteractive(false);
-            frame.exceptionTextArea.setText("");
+            frame.configurationView.exceptionTextArea.setText("");
             try
             {
-                fractals.setMinCoordinate(new Complex(Double.parseDouble(frame.reelField2.getText()), Double.parseDouble(frame.imagField2.getText())));
-                fractals.setMaxCoordinate(new Complex(Double.parseDouble(frame.reelField3.getText()), Double.parseDouble(frame.imagField3.getText())));
-                fractals.setIterationRange(Integer.parseInt(frame.iterationField.getText()));
-                fractals.setWidthHeight(Integer.parseInt(frame.dimensionField.getText()));
+                fractals.setMinCoordinate(new Complex(Double.parseDouble(frame.configurationView.reelField2.getText()), Double.parseDouble(frame.configurationView.imagField2.getText())));
+                fractals.setMaxCoordinate(new Complex(Double.parseDouble(frame.configurationView.reelField3.getText()), Double.parseDouble(frame.configurationView.imagField3.getText())));
+                fractals.setIterationRange(Integer.parseInt(frame.configurationView.iterationField.getText()));
+                fractals.setWidthHeight(Integer.parseInt(frame.configurationView.dimensionField.getText()));
                 fractals.setColorCollection(frame.colorSelectionController.getSelection());
                 frame.graphicsPane.setViewportView(frame.buffPanel); // falls die Größe
                                                             // des Fractals
@@ -59,21 +59,21 @@ public class ConfigurationController implements ActionListener, ItemListener
                                                             // erreicht wird
             } catch (NumberFormatException ex)
             {
-                frame.exceptionTextArea.setText("\n\n Fehler beim Einlesen!\n Mögliche Fehlerquelle:\n -Komma statt Punkt\n als Trennzeichen\n -Buchstaben in der Eingabe ");
+                frame.configurationView.exceptionTextArea.setText("\n\n Fehler beim Einlesen!\n Mögliche Fehlerquelle:\n -Komma statt Punkt\n als Trennzeichen\n -Buchstaben in der Eingabe ");
             }
-            if (frame.juliaCheckBox.isSelected())
+            if (frame.configurationView.juliaCheckBox.isSelected())
             {
                 try
                 {
                     fractals.paintFractals(new Complex(Double.parseDouble(frame.statusBarView.reelField1.getText()), Double.parseDouble(frame.statusBarView.imagField1.getText())), frame.statusBarView.progressBar);
                 } catch (NumberFormatException ex)
                 {
-                    frame.exceptionTextArea.setText("\n\n Fehler beim Einlesen!\n Mögliche Fehlerquelle:\n -Komma statt Punkt\n als Trennzeichen\n -Buchstaben in der Eingabe ");
+                    frame.configurationView.exceptionTextArea.setText("\n\n Fehler beim Einlesen!\n Mögliche Fehlerquelle:\n -Komma statt Punkt\n als Trennzeichen\n -Buchstaben in der Eingabe ");
                 }
             } else
                 fractals.paintFractals(null, frame.statusBarView.progressBar);
 
-            if (frame.complexPlaneCheckBox.isSelected())
+            if (frame.configurationView.complexPlaneCheckBox.isSelected())
             {
                 fractals.paintKoordinateSystem();
             }
@@ -108,10 +108,10 @@ public class ConfigurationController implements ActionListener, ItemListener
         }
         if (selectedItem.getSelectedItem().equals("Farbabstufungen"))
         {
-            frame.colorButton.setEnabled(true);
+            frame.configurationView.colorButton.setEnabled(true);
             fractals.setColorMode(Mode.COLOR);
         } else
-            frame.colorButton.setEnabled(false);
+            frame.configurationView.colorButton.setEnabled(false);
 
     }
 }

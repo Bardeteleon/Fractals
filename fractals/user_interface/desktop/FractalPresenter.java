@@ -55,12 +55,12 @@ public class FractalPresenter implements MouseListener, MouseMotionListener
                 }
                 fractals.setMinCoordinate(fractals.getCoordinate(xPress, yMin));
                 fractals.setMaxCoordinate(fractals.getCoordinate(xMax, yPress));
-                if (frame.iterationCheckBox.isSelected())
+                if (frame.configurationView.iterationCheckBox.isSelected())
                 {
                     fractals.setIterationRange(-1);
                 }
                 setInteractive(false);
-                frame.repaintButton.setText("Abbrechen!");
+                frame.configurationView.repaintButton.setText("Abbrechen!");
                 if (fractals.mandelbrotmengePainted)
                     fractals.paintFractals(null, frame.statusBarView.progressBar);
                 else
@@ -77,45 +77,45 @@ public class FractalPresenter implements MouseListener, MouseMotionListener
         {
             if (SwingUtilities.isLeftMouseButton(me))
             {
-                frame.repaintButton.setText("Abbrechen!");
+                frame.configurationView.repaintButton.setText("Abbrechen!");
                 setInteractive(false);
                 fractals.setMinCoordinate(new Complex(-2.0, -2.0));
                 fractals.setMaxCoordinate(new Complex(2.0, 2.0));
                 fractals.setIterationRange(40);
                 fractals.paintFractals(fractals.getCoordinate(me.getX(), me.getY()), frame.statusBarView.progressBar);
-                frame.juliaCheckBox.setSelected(true);
+                frame.configurationView.juliaCheckBox.setSelected(true);
             }
             if (SwingUtilities.isRightMouseButton(me))
             {
-                frame.repaintButton.setText("Abbrechen!");
+                frame.configurationView.repaintButton.setText("Abbrechen!");
                 setInteractive(false);
                 fractals.setMinCoordinate(new Complex(-2.0, -2.0));
                 fractals.setMaxCoordinate(new Complex(2.0, 2.0));
                 fractals.setIterationRange(40);
                 fractals.paintFractals(null, frame.statusBarView.progressBar);
-                frame.juliaCheckBox.setSelected(false);
+                frame.configurationView.juliaCheckBox.setSelected(false);
             }
         } else
         {
             if (SwingUtilities.isLeftMouseButton(me))
             {
-                frame.repaintButton.setText("Abbrechen!");
+                frame.configurationView.repaintButton.setText("Abbrechen!");
                 setInteractive(false);
                 fractals.setMinCoordinate(new Complex(-2.0, -2.0));
                 fractals.setMaxCoordinate(new Complex(2.0, 2.0));
                 fractals.setIterationRange(40);
                 fractals.paintFractals(null, frame.statusBarView.progressBar);
-                frame.juliaCheckBox.setSelected(false);
+                frame.configurationView.juliaCheckBox.setSelected(false);
             }
             if (SwingUtilities.isRightMouseButton(me))
             {
-                frame.repaintButton.setText("Abbrechen!");
+                frame.configurationView.repaintButton.setText("Abbrechen!");
                 setInteractive(false);
                 fractals.setMinCoordinate(new Complex(-2.0, -2.0));
                 fractals.setMaxCoordinate(new Complex(2.0, 2.0));
                 fractals.setIterationRange(40);
                 fractals.paintFractals(fractals.getParamC(), frame.statusBarView.progressBar);
-                frame.juliaCheckBox.setSelected(true);
+                frame.configurationView.juliaCheckBox.setSelected(true);
             }
         }
         frame.setAktTextFieldText();
@@ -126,7 +126,7 @@ public class FractalPresenter implements MouseListener, MouseMotionListener
     {
         // aktuelle Koordinaten des Cursers in den jeweiligen TextFeldern
         // anzeigen lassen
-        if (!frame.juliaCheckBox.isSelected())
+        if (!frame.configurationView.juliaCheckBox.isSelected())
         {
             final Complex coordinate = fractals.getCoordinate(me.getX(), me.getY());
             frame.statusBarView.reelField1.setText("" + coordinate.getReal());
