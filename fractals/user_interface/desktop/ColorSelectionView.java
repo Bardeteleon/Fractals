@@ -51,6 +51,14 @@ public class ColorSelectionView extends JDialog {
         colorUpdateButton.addActionListener(controller);
     }
 
+    public Color[] getColorsFromPanels() {
+        Color[] colors = new Color[panels.length];
+        for (int i = 0; i < panels.length; i++) {
+            colors[i] = panels[i].getBackground();
+        }
+        return colors;
+    }
+
     public void updateColorPanels(Color[] colorCollection, MouseListener listener) {
         JPanel panel = new JPanel(new FlowLayout());
         panel.setBackground(Color.LIGHT_GRAY);

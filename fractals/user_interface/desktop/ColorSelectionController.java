@@ -53,11 +53,7 @@ public class ColorSelectionController implements MouseListener, ActionListener {
 			}
 		}
 		if (cmd.equals("Farbverlauf aktualisieren")) {
-			Color[] c = new Color[view.panels.length];
-			for (int i = 0; i < c.length; i++) {
-				c[i] = view.panels[i].getBackground();
-			}
-			selection = c;
+			selection = view.getColorsFromPanels();
 			view.setVisible(false);
 		}
 	}
