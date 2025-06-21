@@ -9,6 +9,7 @@ import java.awt.event.MouseListener;
 import javax.swing.JColorChooser;
 import javax.swing.JComponent;
 import javax.swing.JOptionPane;
+import java.util.Arrays;
 
 public class ColorSelectionController implements MouseListener, ActionListener {
 	private ColorSelectionView view;
@@ -34,28 +35,46 @@ public class ColorSelectionController implements MouseListener, ActionListener {
 	public void actionPerformed(ActionEvent arg) {
 		String cmd = arg.getActionCommand();
 		if (cmd.equals("Anzahl Farben")) {
-			String eingabe = JOptionPane.showInputDialog(view, "Anzahl der Farben");
-			if (eingabe != null) {
-				try {
-					int newSize = Integer.parseInt(eingabe);
-					Color[] oldSelection = selection;
-					selection = new Color[newSize];
-					System.arraycopy(oldSelection, 0, selection, 0, Math.min(oldSelection.length, newSize));
-					for (int i = oldSelection.length; i < newSize; i++) {
-						selection[i] = Color.BLACK;
-					}
-					view.updateColorPanels(selection, this);
-					view.pack();
-				} catch (NumberFormatException ex) {
-					configurationView.exceptionTextArea
-							.setText("\n\n Fehler bei der Eingabe\n der Farbanzahl.\n Bitte nur zahlen Eingeben!");
-				}
-			}
+			handleChangeColorCount();
 		}
 		if (cmd.equals("Farbverlauf aktualisieren")) {
-			selection = view.getColorsFromPanels();
-			view.setVisible(false);
+			handleUpdateColorGradient();
 		}
+	}
+
+	private void handleChangeColorCount() {
+		String input = JOptionPane.showInputDialog(view, "Anzahl der Farben");
+		if (input == null) {
+			return;
+		}
+
+		try {
+			int newSize = Integer.parseInt(input);
+			resizeSelection(newSize);
+			view.updateColorPanels(selection, this);
+			view.pack();
+		} catch (NumberFormatException ex) {
+			showInputError();
+		}
+	}
+
+	private void resizeSelection(int newSize) {
+		int oldSize = selection.length;
+		selection = Arrays.copyOf(selection, newSize);
+
+		if (newSize > oldSize) {
+			Arrays.fill(selection, oldSize, newSize, Color.BLACK);
+		}
+	}
+
+	private void showInputError() {
+		configurationView.exceptionTextArea
+				.setText("\n\n Fehler bei der Eingabe\n der Farbanzahl.\n Bitte nur zahlen Eingeben!");
+	}
+
+	private void handleUpdateColorGradient() {
+		selection = view.getColorsFromPanels();
+		view.setVisible(false);
 	}
 
 	@Override
