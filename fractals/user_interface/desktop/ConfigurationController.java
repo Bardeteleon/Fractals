@@ -46,18 +46,7 @@ public class ConfigurationController implements ActionListener, ItemListener
                 fractals.setIterationRange(Integer.parseInt(frame.configurationView.iterationField.getText()));
                 fractals.setWidthHeight(Integer.parseInt(frame.configurationView.dimensionField.getText()));
                 fractals.setColorCollection(frame.colorSelectionController.getSelection());
-                frame.graphicsPane.setViewportView(frame.buffPanel); // falls die Größe
-                                                            // des Fractals
-                                                            // Objekts
-                                                            // geändert wird
-                                                            // muss sich das
-                                                            // ScrollPane
-                                                            // aktualisieren,
-                                                            // was mit dem
-                                                            // wiederholten
-                                                            // setzen des
-                                                            // Viewports
-                                                            // erreicht wird
+                frame.fractalViewScrollable.update();
             } catch (NumberFormatException ex)
             {
                 frame.configurationView.exceptionTextArea.setText("\n\n Fehler beim Einlesen!\n Mögliche Fehlerquelle:\n -Komma statt Punkt\n als Trennzeichen\n -Buchstaben in der Eingabe ");

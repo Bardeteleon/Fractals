@@ -15,6 +15,7 @@ import javax.imageio.ImageIO;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import javax.swing.SwingUtilities;
+import javax.swing.JScrollPane;
 
 import fractals.core.Iterator;
 import fractals.core.Complex;
@@ -52,7 +53,6 @@ public class FractalView extends JPanel
 
 	public FractalView(double minRe, double maxRe, double minIm, double maxIm, int iterationRange, int widthHeight, Colorizer.Mode mode)
 	{
-
 		setMinCoordinate(new Complex(minRe, minIm));
 		setMaxCoordinate(new Complex(maxRe, maxIm));
 		setWidthHeight(widthHeight);
