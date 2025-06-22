@@ -23,9 +23,10 @@ public class MenuBarController implements ActionListener
     {
         this.fractals = fractals;
         this.frame = frame;
+        makeInteractive();
     }
 
-    public void makeInteractive()
+    private void makeInteractive()
     {
         frame.menuBarView.optionButton.addActionListener(this);
         frame.menuBarView.saveButton.addActionListener(this);

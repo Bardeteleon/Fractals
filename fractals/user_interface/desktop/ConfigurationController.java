@@ -10,19 +10,26 @@ import fractals.core.Complex;
 import fractals.core.Colorizer.Mode;
 import fractals.user_interface.desktop.FractalView;
 import fractals.user_interface.desktop.WindowView;
+import fractals.user_interface.desktop.FractalPresenter;
+import fractals.user_interface.desktop.ColorSelectionController;
 
 public class ConfigurationController implements ActionListener, ItemListener
 {
     private FractalView fractals;
     private WindowView frame;
+    private FractalPresenter fractalPresenter;
+    private ColorSelectionController colorSelectionController;
 
-    public ConfigurationController(FractalView fractals, WindowView frame)
+    public ConfigurationController(FractalView fractals, WindowView frame, FractalPresenter fractalPresenter, ColorSelectionController colorSelectionController)
     {
         this.fractals = fractals;
         this.frame = frame;
+        this.fractalPresenter = fractalPresenter;
+        this.colorSelectionController = colorSelectionController;
+        makeInteractive();
     }
 
-    public void makeInteractive()
+    private void makeInteractive()
     {
         frame.configurationView.repaintButton.addActionListener(this);
         frame.configurationView.juliaCheckBox.addActionListener(this);
@@ -38,7 +45,7 @@ public class ConfigurationController implements ActionListener, ItemListener
         if (cmd.equals("Neu Zeichnen"))
         {
             frame.configurationView.repaintButton.setText("Abbrechen!");
-            frame.fractalPresenter.setInteractive(false);
+            fractalPresenter.setInteractive(false);
             frame.configurationView.exceptionTextArea.setText("");
             try
             {
@@ -46,7 +53,7 @@ public class ConfigurationController implements ActionListener, ItemListener
                 fractals.setMaxCoordinate(new Complex(Double.parseDouble(frame.configurationView.reelField3.getText()), Double.parseDouble(frame.configurationView.imagField3.getText())));
                 fractals.setIterationRange(Integer.parseInt(frame.configurationView.iterationField.getText()));
                 fractals.setWidthHeight(Integer.parseInt(frame.configurationView.dimensionField.getText()));
-                fractals.setColorCollection(frame.colorSelectionController.getSelection());
+                fractals.setColorCollection(colorSelectionController.getSelection());
                 frame.fractalViewScrollable.update();
             } catch (NumberFormatException ex)
             {

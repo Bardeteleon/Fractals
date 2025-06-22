@@ -5,6 +5,11 @@ import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 
 import fractals.user_interface.desktop.WindowView;
+import fractals.user_interface.desktop.ConfigurationController;
+import fractals.user_interface.desktop.FractalPresenter;
+import fractals.user_interface.desktop.MenuBarController;
+import fractals.user_interface.desktop.WindowController;
+import fractals.user_interface.desktop.ColorSelectionController;
 
 public class App
 {
@@ -31,9 +36,21 @@ public class App
 				{
 					e.printStackTrace();
 				}
-				WindowView view = new WindowView();
+				makeApp();
 			}
 		});
+	}
 
+	public static void makeApp()
+	{
+		WindowView windowView = new WindowView();
+		
+		FractalPresenter fractalPresenter = new FractalPresenter(windowView.fractalView, windowView);
+		WindowController windowController = new WindowController(windowView, fractalPresenter);
+		MenuBarController menuBarController = new MenuBarController(windowView.fractalView, windowView);
+		ColorSelectionController colorSelectionController = new ColorSelectionController(windowView.colorSelectionView, windowView.fractalView.getColorCollection(), windowView.configurationView);
+		ConfigurationController configurationController = new ConfigurationController(windowView.fractalView, windowView, fractalPresenter, colorSelectionController);
+
+		windowView.setVisible(true);
 	}
 }

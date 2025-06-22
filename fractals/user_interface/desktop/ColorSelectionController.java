@@ -21,9 +21,10 @@ public class ColorSelectionController implements MouseListener, ActionListener {
 		this.selection = initSelection;
 		this.configurationView = configurationView;
 		this.view.updateColorPanels(this.selection, this);
+		makeInteractive();
 	}
 
-	public void makeInteractive() {
+	private void makeInteractive() {
 		view.addController(this);
 	}
 

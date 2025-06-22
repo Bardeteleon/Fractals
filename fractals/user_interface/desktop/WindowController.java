@@ -8,19 +8,23 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 import fractals.user_interface.desktop.WindowView;
+import fractals.user_interface.desktop.FractalPresenter;
 
 public class WindowController extends WindowAdapter implements ChangeListener
 {
     private WindowView frame;
+    private FractalPresenter fractalPresenter;
     
 	private boolean withWindowClosingDialog = false;
 
-    public WindowController(WindowView frame)
+    public WindowController(WindowView frame, FractalPresenter fractalPresenter)
     {
         this.frame = frame;
+        this.fractalPresenter = fractalPresenter;
+        makeInteractive();
     }
 
-    public void makeInteractive()
+    private void makeInteractive()
     {
 		frame.addWindowListener(this);
 		frame.statusBarView.progressBar.addChangeListener(this);
@@ -46,7 +50,7 @@ public class WindowController extends WindowAdapter implements ChangeListener
             JProgressBar bar = (JProgressBar) c.getSource();
             if (bar.getValue() == 100)
             {
-                frame.fractalPresenter.setInteractive(true);
+                fractalPresenter.setInteractive(true);
                 frame.configurationView.repaintButton.setText("Neu Zeichnen");
             }
         }

@@ -19,12 +19,9 @@ public class FractalPresenter implements MouseListener, MouseMotionListener
     {
         this.fractals = fractalView;
         this.frame = frame;
+        setInteractive(true);
     }
 
-/*************  ✨ Windsurf Command ⭐  *************/
-    /**
-
-/*******  f7c2972c-5795-440a-9818-b0478828036c  *******/
     @Override
     public void mousePressed(MouseEvent me)
     {
