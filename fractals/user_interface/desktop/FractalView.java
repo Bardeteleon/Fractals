@@ -57,7 +57,7 @@ public class FractalView extends JPanel
 		if (buffer == null)
 		{
 			buffer = new BufferedImage(configuration.widthHeight, configuration.widthHeight, BufferedImage.TYPE_INT_ARGB);
-			paintFractals(null);
+			paintFractals();
 		}
 		// Graphics2D g = (Graphics2D) graphics;
 		// g.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
@@ -69,15 +69,9 @@ public class FractalView extends JPanel
 		graphics.drawImage(buffer, 0, 0, configuration.widthHeight, configuration.widthHeight, this);
 	}
 
-	public void paintFractals(final Complex param)
+	public void paintFractals()
 	{
 		statusBarView.progressBar.setString(null);
-		boolean mandelbrotmengePainted = Objects.isNull(param);
-		configuration = new Configuration.Builder()
-								.basedOn(configuration)
-								.variant(mandelbrotmengePainted ? fractals.core.Variant.MANDELBROT : fractals.core.Variant.JULIA)
-								.variant_parameter(mandelbrotmengePainted ? Optional.empty() : Optional.of(param))
-								.build();
 		fractal = new fractals.core.Fractal(configuration);
 		fractal.setFinishCallback(() -> { SwingUtilities.invokeLater(() -> {
 			colorizeImage();
@@ -112,6 +106,23 @@ public class FractalView extends JPanel
 	public boolean isMandelbrotmengeConfigured()
 	{
 		return configuration.variant == Variant.MANDELBROT;
+	}
+
+	public void setMandelbrotmengeConfigured()
+	{
+		configuration = new Configuration.Builder()
+										 .basedOn(configuration)
+										 .variant(fractals.core.Variant.MANDELBROT)
+										 .build();
+	}
+
+	public void setJuliamengeConfigured(Complex parameter)
+	{
+		configuration = new Configuration.Builder()
+										 .basedOn(configuration)
+										 .variant(fractals.core.Variant.JULIA)
+										 .variant_parameter(Optional.of(parameter))
+										 .build();
 	}
 
 	public Complex getCoordinate(int x, int y)

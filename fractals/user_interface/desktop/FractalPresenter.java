@@ -62,10 +62,7 @@ public class FractalPresenter implements MouseListener, MouseMotionListener
                 }
                 setInteractive(false);
                 frame.configurationView.repaintButton.setText("Abbrechen!");
-                if (fractals.isMandelbrotmengeConfigured())
-                    fractals.paintFractals(null);
-                else
-                    fractals.paintFractals(fractals.getParamC());
+                fractals.paintFractals();
             }
             frame.setAktTextFieldText();
         }
@@ -83,7 +80,8 @@ public class FractalPresenter implements MouseListener, MouseMotionListener
                 fractals.setMinCoordinate(new Complex(-2.0, -2.0));
                 fractals.setMaxCoordinate(new Complex(2.0, 2.0));
                 fractals.setIterationRange(40);
-                fractals.paintFractals(fractals.getCoordinate(me.getX(), me.getY()));
+                fractals.setJuliamengeConfigured(fractals.getCoordinate(me.getX(), me.getY()));
+                fractals.paintFractals();
                 frame.configurationView.juliaCheckBox.setSelected(true);
             }
             if (SwingUtilities.isRightMouseButton(me))
@@ -93,7 +91,7 @@ public class FractalPresenter implements MouseListener, MouseMotionListener
                 fractals.setMinCoordinate(new Complex(-2.0, -2.0));
                 fractals.setMaxCoordinate(new Complex(2.0, 2.0));
                 fractals.setIterationRange(40);
-                fractals.paintFractals(null);
+                fractals.paintFractals();
                 frame.configurationView.juliaCheckBox.setSelected(false);
             }
         } else
@@ -105,7 +103,8 @@ public class FractalPresenter implements MouseListener, MouseMotionListener
                 fractals.setMinCoordinate(new Complex(-2.0, -2.0));
                 fractals.setMaxCoordinate(new Complex(2.0, 2.0));
                 fractals.setIterationRange(40);
-                fractals.paintFractals(null);
+                fractals.setMandelbrotmengeConfigured();
+                fractals.paintFractals();
                 frame.configurationView.juliaCheckBox.setSelected(false);
             }
             if (SwingUtilities.isRightMouseButton(me))
@@ -115,7 +114,7 @@ public class FractalPresenter implements MouseListener, MouseMotionListener
                 fractals.setMinCoordinate(new Complex(-2.0, -2.0));
                 fractals.setMaxCoordinate(new Complex(2.0, 2.0));
                 fractals.setIterationRange(40);
-                fractals.paintFractals(fractals.getParamC());
+                fractals.paintFractals();
                 frame.configurationView.juliaCheckBox.setSelected(true);
             }
         }
