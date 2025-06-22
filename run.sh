@@ -1,1 +1,1 @@
-./build.sh && java -cp build mandelbrot.MStarter
+./build.sh && java -cp build fractals.user_interface.desktop.App

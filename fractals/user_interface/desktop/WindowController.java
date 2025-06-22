@@ -7,13 +7,15 @@ import javax.swing.JProgressBar;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
+import fractals.user_interface.desktop.WindowView;
+
 public class WindowController extends WindowAdapter implements ChangeListener
 {
-    private mandelbrot.MFrame frame;
+    private WindowView frame;
     
 	private boolean withWindowClosingDialog = false;
 
-    public WindowController(mandelbrot.MFrame frame)
+    public WindowController(WindowView frame)
     {
         this.frame = frame;
     }

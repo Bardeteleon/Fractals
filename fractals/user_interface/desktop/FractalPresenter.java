@@ -2,7 +2,7 @@ package fractals.user_interface.desktop;
 
 import fractals.core.Complex;
 import fractals.user_interface.desktop.FractalView;
-import mandelbrot.MFrame;
+import fractals.user_interface.desktop.WindowView;
 
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
@@ -13,14 +13,18 @@ public class FractalPresenter implements MouseListener, MouseMotionListener
 {
     private int xPress, yPress, xOld, yOld, checker;
     private FractalView fractals;
-    private MFrame frame;
+    private WindowView frame;
 
-    public FractalPresenter(FractalView fractalView, MFrame frame)
+    public FractalPresenter(FractalView fractalView, WindowView frame)
     {
         this.fractals = fractalView;
         this.frame = frame;
     }
 
+/*************  ✨ Windsurf Command ⭐  *************/
+    /**
+
+/*******  f7c2972c-5795-440a-9818-b0478828036c  *******/
     @Override
     public void mousePressed(MouseEvent me)
     {
