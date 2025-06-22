@@ -10,13 +10,15 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.InputStream;
 
+import fractals.user_interface.desktop.FractalView;
+
 public class MenuBarController implements ActionListener
 {
-    private mandelbrot.Fractal fractals;
+    private FractalView fractals;
     private mandelbrot.MFrame frame;
     private JFileChooser chooser;
 
-    public MenuBarController(mandelbrot.Fractal fractals, mandelbrot.MFrame frame)
+    public MenuBarController(FractalView fractals, mandelbrot.MFrame frame)
     {
         this.fractals = fractals;
         this.frame = frame;

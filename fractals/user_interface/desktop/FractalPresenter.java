@@ -1,7 +1,7 @@
 package fractals.user_interface.desktop;
 
 import fractals.core.Complex;
-import mandelbrot.Fractal;
+import fractals.user_interface.desktop.FractalView;
 import mandelbrot.MFrame;
 
 import java.awt.event.MouseEvent;
@@ -12,10 +12,10 @@ import javax.swing.SwingUtilities;
 public class FractalPresenter implements MouseListener, MouseMotionListener
 {
     private int xPress, yPress, xOld, yOld, checker;
-    private mandelbrot.Fractal fractals;
+    private FractalView fractals;
     private MFrame frame;
 
-    public FractalPresenter(mandelbrot.Fractal fractalView, MFrame frame)
+    public FractalPresenter(FractalView fractalView, MFrame frame)
     {
         this.fractals = fractalView;
         this.frame = frame;

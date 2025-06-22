@@ -8,13 +8,14 @@ import javax.swing.JComboBox;
 
 import fractals.core.Complex;
 import fractals.core.Colorizer.Mode;
+import fractals.user_interface.desktop.FractalView;
 
 public class ConfigurationController implements ActionListener, ItemListener
 {
-    private mandelbrot.Fractal fractals;
+    private FractalView fractals;
     private mandelbrot.MFrame frame;
 
-    public ConfigurationController(mandelbrot.Fractal fractals, mandelbrot.MFrame frame)
+    public ConfigurationController(FractalView fractals, mandelbrot.MFrame frame)
     {
         this.fractals = fractals;
         this.frame = frame;

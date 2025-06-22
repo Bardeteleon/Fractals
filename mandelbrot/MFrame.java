@@ -58,11 +58,12 @@ import fractals.user_interface.desktop.ColorSelectionController;
 import fractals.user_interface.desktop.ConfigurationController;
 import fractals.user_interface.desktop.WindowController;
 import fractals.user_interface.desktop.ColorSelectionView;
+import fractals.user_interface.desktop.FractalView;
 
 public class MFrame extends JFrame
 {
 
-	public Fractal fractals;
+	public FractalView fractals;
 	public JCheckBox complexPlaneCheckBox;
 	public JScrollPane graphicsPane;
 	public JPanel buffPanel;
@@ -86,7 +87,7 @@ public class MFrame extends JFrame
 		windowController = new WindowController(this);
 
 		// ZeichenPane(Center)
-		fractals = new Fractal();
+		fractals = new FractalView();
 		fractalPresenter = new FractalPresenter(fractals, this);
 		buffPanel = new JPanel();
 		buffPanel.add(fractals);

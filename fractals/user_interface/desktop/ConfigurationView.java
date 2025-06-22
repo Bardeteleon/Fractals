@@ -2,7 +2,7 @@ package fractals.user_interface.desktop;
 
 import java.awt.*;
 import javax.swing.*;
-import mandelbrot.Fractal;
+import fractals.user_interface.desktop.FractalView;
 
 public class ConfigurationView extends JPanel {
     public JButton repaintButton;
@@ -19,7 +19,7 @@ public class ConfigurationView extends JPanel {
     public JComboBox<String> colorModeChooser;
     public JTextArea exceptionTextArea;
 
-    public ConfigurationView(Fractal fractals) {
+    public ConfigurationView(FractalView fractals) {
         setVisible(false);
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
         setBackground(Color.WHITE);
