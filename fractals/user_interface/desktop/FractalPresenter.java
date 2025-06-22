@@ -1,6 +1,13 @@
 package fractals.user_interface.desktop;
 
 import fractals.core.Complex;
+import fractals.core.Configuration;
+import fractals.core.Configuration.Builder;
+import fractals.core.Fractal;
+import fractals.core.Configuration.IterationRangeMode;
+import fractals.core.Colorizer;
+import fractals.core.Variant;
+import fractals.core.Colorizer.Mode;
 import fractals.user_interface.desktop.FractalView;
 import fractals.user_interface.desktop.WindowView;
 
@@ -8,19 +15,182 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import javax.swing.SwingUtilities;
+import java.awt.image.BufferedImage;
+import java.util.Objects;
+import java.awt.Color;
+import java.util.Optional;
 
 public class FractalPresenter implements MouseListener, MouseMotionListener
 {
     private int xPress, yPress, xOld, yOld, checker;
-    private FractalView fractals;
-    private WindowView frame;
+    private FractalView fractalView;
+    private WindowView windowView;
+	private Colorizer.Mode mode;
+	private BufferedImage buffer;
+	private Color[] colorCollection = { Color.blue, Color.cyan, Color.darkGray, Color.magenta };
+	private Fractal fractal;
+	private Configuration configuration;
 
-    public FractalPresenter(FractalView fractalView, WindowView frame)
+    public FractalPresenter(WindowView windowView)
     {
-        this.fractals = fractalView;
-        this.frame = frame;
+        this.fractalView = windowView.fractalView;
+        this.windowView = windowView;
+		configuration = new Configuration.Builder()
+										 .widthHeight(1000)
+										 .iterationRangeManual(40)
+										 .iterationRangeMode(IterationRangeMode.MANUAL)
+										 .variant(fractals.core.Variant.MANDELBROT)
+										 .min(new Complex(-2.0, -2.0))
+										 .max(new Complex(2.0, 2.0))
+										 .build();
+        setWidthHeight(configuration.widthHeight);
+		setColorMode(Colorizer.Mode.BLACK_WHITE);
         setInteractive(true);
     }
+
+	public void paintFractals()
+	{
+		windowView.statusBarView.progressBar.setString(null);
+		fractal = new fractals.core.Fractal(configuration);
+		fractal.setFinishCallback(() -> { SwingUtilities.invokeLater(() -> {
+			colorizeImage();
+            fractalView.setImage(buffer, configuration.widthHeight);
+			fractalView.repaint();
+			windowView.statusBarView.progressBar.setString("Fertig!");
+		}); });
+		fractal.setStatusUpdateCallback((status) -> { SwingUtilities.invokeLater(() -> { 
+			windowView.statusBarView.progressBar.setValue(status); 
+		}); });
+		fractal.evaluate();
+	}
+
+	private void colorizeImage()
+	{
+		if (Objects.isNull(fractal))
+			return;
+
+		if (Objects.isNull(configuration))
+			return;
+
+		Colorizer colorizer = new Colorizer(fractal.getIterationGrid(), configuration.getIterationRange());
+		colorizer.setMode(mode);
+		colorizer.setColorCollection(colorCollection);
+		colorizer.applyTo(buffer);
+	}
+
+	public void setMandelbrotmengeConfigured()
+	{
+		configuration = new Configuration.Builder()
+										 .basedOn(configuration)
+										 .variant(fractals.core.Variant.MANDELBROT)
+										 .build();
+	}
+
+	public void setJuliamengeConfigured(Complex parameter)
+	{
+		configuration = new Configuration.Builder()
+										 .basedOn(configuration)
+										 .variant(fractals.core.Variant.JULIA)
+										 .variant_parameter(Optional.of(parameter))
+										 .build();
+	}
+    
+	public double getMinRe()
+	{
+		return configuration.min.getReal();
+	}
+
+	public double getMaxRe()
+	{
+		return configuration.max.getReal();
+	}
+
+	public double getMinIm()
+	{
+		return configuration.min.getImag();
+	}
+
+	public double getMaxIm()
+	{
+		return configuration.max.getImag();
+	}
+
+	public int getIterationRange()
+	{
+		if (Objects.nonNull(configuration))
+			return configuration.getIterationRange();
+		else
+			return configuration.iterationRangeManual;
+	}
+
+	public int getWidthHeight()
+	{
+		return configuration.widthHeight;
+	}
+
+	public Color[] getColorCollection()
+	{
+		return colorCollection;
+	}
+
+	public Complex getParamC()
+	{
+		return configuration.variant_parameter.orElse(null);
+	}
+
+	public void setIterationRange(int range)
+	{
+		if (range <= 0)
+		{
+			configuration = new Configuration.Builder()
+                                             .basedOn(configuration)
+                                             .iterationRangeMode(IterationRangeMode.AUTOMATIC)
+                                             .build();
+		}
+		else
+		{
+			configuration = new Configuration.Builder()
+                                             .basedOn(configuration)
+			                                 .iterationRangeMode(IterationRangeMode.MANUAL)
+										     .iterationRangeManual(range)
+										     .build();
+		}
+	}
+
+	public void setColorMode(Colorizer.Mode mode)
+	{
+		this.mode = mode;
+	}
+
+	public void setMinCoordinate(Complex min)
+	{
+		configuration = new Builder().basedOn(configuration).min(min).build();
+	}
+
+	public void setMaxCoordinate(Complex max)
+	{
+		configuration = new Builder().basedOn(configuration).max(max).build();
+	}
+
+	public void setWidthHeight(int wH)
+	{
+		if (wH > 0)
+		{
+            buffer = new BufferedImage(wH, wH, BufferedImage.TYPE_INT_ARGB);
+			configuration = new Builder().basedOn(configuration).widthHeight(wH).build();
+		}
+	}
+
+	public void setColorCollection(Color[] c)
+	{
+		colorCollection = c.clone();
+	}
+
+	public void stop()
+	{
+		if (Objects.nonNull(fractal))
+			fractal.stop();
+	}
 
     @Override
     public void mousePressed(MouseEvent me)
@@ -54,71 +224,71 @@ public class FractalPresenter implements MouseListener, MouseMotionListener
                     yMin = me.getY();
                     xMax = xPress + (me.getY() - yPress);
                 }
-                fractals.setMinCoordinate(fractals.getCoordinate(xPress, yMin));
-                fractals.setMaxCoordinate(fractals.getCoordinate(xMax, yPress));
-                if (frame.configurationView.iterationCheckBox.isSelected())
+                setMinCoordinate(configuration.getCoordinate(xPress, yMin));
+                setMaxCoordinate(configuration.getCoordinate(xMax, yPress));
+                if (windowView.configurationView.iterationCheckBox.isSelected())
                 {
-                    fractals.setIterationRange(-1);
+                    setIterationRange(-1);
                 }
                 setInteractive(false);
-                frame.configurationView.repaintButton.setText("Abbrechen!");
-                fractals.paintFractals();
+                windowView.configurationView.repaintButton.setText("Abbrechen!");
+                paintFractals();
             }
-            frame.setAktTextFieldText();
+            windowView.setAktTextFieldText(this);
         }
     }
 
     @Override
     public void mouseClicked(MouseEvent me)
     {
-        if (fractals.isMandelbrotmengeConfigured())
+        if (configuration.variant == Variant.MANDELBROT)
         {
             if (SwingUtilities.isLeftMouseButton(me))
             {
-                frame.configurationView.repaintButton.setText("Abbrechen!");
+                windowView.configurationView.repaintButton.setText("Abbrechen!");
                 setInteractive(false);
-                fractals.setMinCoordinate(new Complex(-2.0, -2.0));
-                fractals.setMaxCoordinate(new Complex(2.0, 2.0));
-                fractals.setIterationRange(40);
-                fractals.setJuliamengeConfigured(fractals.getCoordinate(me.getX(), me.getY()));
-                fractals.paintFractals();
-                frame.configurationView.juliaCheckBox.setSelected(true);
+                setMinCoordinate(new Complex(-2.0, -2.0));
+                setMaxCoordinate(new Complex(2.0, 2.0));
+                setIterationRange(40);
+                setJuliamengeConfigured(configuration.getCoordinate(me.getX(), me.getY()));
+                paintFractals();
+                windowView.configurationView.juliaCheckBox.setSelected(true);
             }
             if (SwingUtilities.isRightMouseButton(me))
             {
-                frame.configurationView.repaintButton.setText("Abbrechen!");
+                windowView.configurationView.repaintButton.setText("Abbrechen!");
                 setInteractive(false);
-                fractals.setMinCoordinate(new Complex(-2.0, -2.0));
-                fractals.setMaxCoordinate(new Complex(2.0, 2.0));
-                fractals.setIterationRange(40);
-                fractals.paintFractals();
-                frame.configurationView.juliaCheckBox.setSelected(false);
+                setMinCoordinate(new Complex(-2.0, -2.0));
+                setMaxCoordinate(new Complex(2.0, 2.0));
+                setIterationRange(40);
+                paintFractals();
+                windowView.configurationView.juliaCheckBox.setSelected(false);
             }
         } else
         {
             if (SwingUtilities.isLeftMouseButton(me))
             {
-                frame.configurationView.repaintButton.setText("Abbrechen!");
+                windowView.configurationView.repaintButton.setText("Abbrechen!");
                 setInteractive(false);
-                fractals.setMinCoordinate(new Complex(-2.0, -2.0));
-                fractals.setMaxCoordinate(new Complex(2.0, 2.0));
-                fractals.setIterationRange(40);
-                fractals.setMandelbrotmengeConfigured();
-                fractals.paintFractals();
-                frame.configurationView.juliaCheckBox.setSelected(false);
+                setMinCoordinate(new Complex(-2.0, -2.0));
+                setMaxCoordinate(new Complex(2.0, 2.0));
+                setIterationRange(40);
+                setMandelbrotmengeConfigured();
+                paintFractals();
+                windowView.configurationView.juliaCheckBox.setSelected(false);
             }
             if (SwingUtilities.isRightMouseButton(me))
             {
-                frame.configurationView.repaintButton.setText("Abbrechen!");
+                windowView.configurationView.repaintButton.setText("Abbrechen!");
                 setInteractive(false);
-                fractals.setMinCoordinate(new Complex(-2.0, -2.0));
-                fractals.setMaxCoordinate(new Complex(2.0, 2.0));
-                fractals.setIterationRange(40);
-                fractals.paintFractals();
-                frame.configurationView.juliaCheckBox.setSelected(true);
+                setMinCoordinate(new Complex(-2.0, -2.0));
+                setMaxCoordinate(new Complex(2.0, 2.0));
+                setIterationRange(40);
+                paintFractals();
+                windowView.configurationView.juliaCheckBox.setSelected(true);
             }
         }
-        frame.setAktTextFieldText();
+        windowView.setAktTextFieldText(this);
     }
 
     @Override
@@ -126,11 +296,11 @@ public class FractalPresenter implements MouseListener, MouseMotionListener
     {
         // aktuelle Koordinaten des Cursers in den jeweiligen TextFeldern
         // anzeigen lassen
-        if (!frame.configurationView.juliaCheckBox.isSelected())
+        if (!windowView.configurationView.juliaCheckBox.isSelected())
         {
-            final Complex coordinate = fractals.getCoordinate(me.getX(), me.getY());
-            frame.statusBarView.reelField1.setText("" + coordinate.getReal());
-            frame.statusBarView.imagField1.setText("" + coordinate.getImag());
+            final Complex coordinate = configuration.getCoordinate(me.getX(), me.getY());
+            windowView.statusBarView.reelField1.setText("" + coordinate.getReal());
+            windowView.statusBarView.imagField1.setText("" + coordinate.getImag());
         }
     }
 
@@ -157,12 +327,12 @@ public class FractalPresenter implements MouseListener, MouseMotionListener
                     // lassen, ansonsten gibt es Überlappungen
                     if (checker == 2)
                     {
-                        fractals.paintZoomRec(xPress, yPress, yOld - yPress);
-                        fractals.paintZoomRec(xPress, yPress, xOld - xPress);
+                        fractalView.paintZoomRec(xPress, yPress, yOld - yPress);
+                        fractalView.paintZoomRec(xPress, yPress, xOld - xPress);
                     }
-                    fractals.paintZoomRec(xPress, yPress, xOld - xPress);
+                    fractalView.paintZoomRec(xPress, yPress, xOld - xPress);
                     xOld = me.getX();
-                    fractals.paintZoomRec(xPress, yPress, xOld - xPress);
+                    fractalView.paintZoomRec(xPress, yPress, xOld - xPress);
                     checker = 1;
                 }
                 // 2Fall: y-Länge > x-Länge des gezogenen
@@ -177,12 +347,12 @@ public class FractalPresenter implements MouseListener, MouseMotionListener
                         // lassen, ansonsten gibt es Überlappungen
                         if (checker == 1)
                         {
-                            fractals.paintZoomRec(xPress, yPress, xOld - xPress);
-                            fractals.paintZoomRec(xPress, yPress, yOld - yPress);
+                            fractalView.paintZoomRec(xPress, yPress, xOld - xPress);
+                            fractalView.paintZoomRec(xPress, yPress, yOld - yPress);
                         }
-                        fractals.paintZoomRec(xPress, yPress, yOld - yPress);
+                        fractalView.paintZoomRec(xPress, yPress, yOld - yPress);
                         yOld = me.getY();
-                        fractals.paintZoomRec(xPress, yPress, yOld - yPress);
+                        fractalView.paintZoomRec(xPress, yPress, yOld - yPress);
                         checker = 2;
                     }
                 }
@@ -205,18 +375,18 @@ public class FractalPresenter implements MouseListener, MouseMotionListener
     {
         if (interactive)
         {
-            if (fractals.getMouseListeners().length < 1)
+            if (fractalView.getMouseListeners().length < 1)
             {
-                fractals.addMouseListener(this);
+                fractalView.addMouseListener(this);
             }
-            if (fractals.getMouseMotionListeners().length < 1)
+            if (fractalView.getMouseMotionListeners().length < 1)
             {
-                fractals.addMouseMotionListener(this);
+                fractalView.addMouseMotionListener(this);
             }
         } else
         {
-            fractals.removeMouseListener(this);
-            fractals.removeMouseMotionListener(this);
+            fractalView.removeMouseListener(this);
+            fractalView.removeMouseMotionListener(this);
         }
     }
 }

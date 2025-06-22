@@ -24,10 +24,10 @@ public class WindowView extends JFrame
 		super("Fractal v2.0");
 
 		statusBarView = new StatusBarView();
-		fractalView = new FractalView(statusBarView);
+		fractalView = new FractalView();
 		fractalViewScrollable = new FractalViewScrollable(fractalView);
 		menuBarView = new MenuBarView();
-		configurationView = new ConfigurationView(fractalView);
+		configurationView = new ConfigurationView();
 		colorSelectionView = new ColorSelectionView(this);
 
 		getContentPane().setLayout(new BorderLayout());
@@ -42,22 +42,22 @@ public class WindowView extends JFrame
 		setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 	}
 	
-	public void setAktTextFieldText()
+	public void setAktTextFieldText(FractalPresenter fractalPresenter)
 	{
-		configurationView.iterationField.setText(fractalView.getIterationRange() + "");
-		configurationView.dimensionField.setText(fractalView.getWidthHeight() + "");
-		if (fractalView.getParamC() != null)
+		configurationView.iterationField.setText(fractalPresenter.getIterationRange() + "");
+		configurationView.dimensionField.setText(fractalPresenter.getWidthHeight() + "");
+		if (fractalPresenter.getParamC() != null)
 		{
-			statusBarView.imagField1.setText("" + fractalView.getParamC().getImag());
-			statusBarView.reelField1.setText("" + fractalView.getParamC().getReal());
+			statusBarView.imagField1.setText("" + fractalPresenter.getParamC().getImag());
+			statusBarView.reelField1.setText("" + fractalPresenter.getParamC().getReal());
 		}
-		configurationView.imagField2.setText(fractalView.getMinIm() + "");
-		configurationView.imagField2.setToolTipText(fractalView.getMinIm() + "");
-		configurationView.imagField3.setText(fractalView.getMaxIm() + "");
-		configurationView.imagField3.setToolTipText(fractalView.getMaxIm() + "");
-		configurationView.reelField2.setText(fractalView.getMinRe() + "");
-		configurationView.reelField2.setToolTipText(fractalView.getMinRe() + "");
-		configurationView.reelField3.setText(fractalView.getMaxRe() + "");
-		configurationView.reelField3.setToolTipText(fractalView.getMaxRe() + "");
+		configurationView.imagField2.setText(fractalPresenter.getMinIm() + "");
+		configurationView.imagField2.setToolTipText(fractalPresenter.getMinIm() + "");
+		configurationView.imagField3.setText(fractalPresenter.getMaxIm() + "");
+		configurationView.imagField3.setToolTipText(fractalPresenter.getMaxIm() + "");
+		configurationView.reelField2.setText(fractalPresenter.getMinRe() + "");
+		configurationView.reelField2.setToolTipText(fractalPresenter.getMinRe() + "");
+		configurationView.reelField3.setText(fractalPresenter.getMaxRe() + "");
+		configurationView.reelField3.setToolTipText(fractalPresenter.getMaxRe() + "");
 	}
 }

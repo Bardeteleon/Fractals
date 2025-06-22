@@ -45,12 +45,14 @@ public class App
 	{
 		WindowView windowView = new WindowView();
 		
-		FractalPresenter fractalPresenter = new FractalPresenter(windowView.fractalView, windowView);
+		FractalPresenter fractalPresenter = new FractalPresenter(windowView);
 		WindowController windowController = new WindowController(windowView, fractalPresenter);
 		MenuBarController menuBarController = new MenuBarController(windowView);
-		ColorSelectionController colorSelectionController = new ColorSelectionController(windowView.colorSelectionView, windowView.fractalView.getColorCollection(), windowView.configurationView);
+		ColorSelectionController colorSelectionController = new ColorSelectionController(windowView.colorSelectionView, fractalPresenter.getColorCollection(), windowView.configurationView);
 		ConfigurationController configurationController = new ConfigurationController(windowView.fractalView, windowView, fractalPresenter, colorSelectionController);
 
+		fractalPresenter.paintFractals();
+		windowView.setAktTextFieldText(fractalPresenter);
 		windowView.setVisible(true);
 	}
 }

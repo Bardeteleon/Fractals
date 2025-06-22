@@ -49,11 +49,11 @@ public class ConfigurationController implements ActionListener, ItemListener
             frame.configurationView.exceptionTextArea.setText("");
             try
             {
-                fractals.setMinCoordinate(new Complex(Double.parseDouble(frame.configurationView.reelField2.getText()), Double.parseDouble(frame.configurationView.imagField2.getText())));
-                fractals.setMaxCoordinate(new Complex(Double.parseDouble(frame.configurationView.reelField3.getText()), Double.parseDouble(frame.configurationView.imagField3.getText())));
-                fractals.setIterationRange(Integer.parseInt(frame.configurationView.iterationField.getText()));
-                fractals.setWidthHeight(Integer.parseInt(frame.configurationView.dimensionField.getText()));
-                fractals.setColorCollection(colorSelectionController.getSelection());
+                fractalPresenter.setMinCoordinate(new Complex(Double.parseDouble(frame.configurationView.reelField2.getText()), Double.parseDouble(frame.configurationView.imagField2.getText())));
+                fractalPresenter.setMaxCoordinate(new Complex(Double.parseDouble(frame.configurationView.reelField3.getText()), Double.parseDouble(frame.configurationView.imagField3.getText())));
+                fractalPresenter.setIterationRange(Integer.parseInt(frame.configurationView.iterationField.getText()));
+                fractalPresenter.setWidthHeight(Integer.parseInt(frame.configurationView.dimensionField.getText()));
+                fractalPresenter.setColorCollection(colorSelectionController.getSelection());
                 frame.fractalViewScrollable.update();
             } catch (NumberFormatException ex)
             {
@@ -64,26 +64,26 @@ public class ConfigurationController implements ActionListener, ItemListener
                 try
                 {
                     Complex parameter = new Complex(Double.parseDouble(frame.statusBarView.reelField1.getText()), Double.parseDouble(frame.statusBarView.imagField1.getText()));
-                    fractals.setJuliamengeConfigured(parameter);
-                    fractals.paintFractals();
+                    fractalPresenter.setJuliamengeConfigured(parameter);
+                    fractalPresenter.paintFractals();
                 } catch (NumberFormatException ex)
                 {
                     frame.configurationView.exceptionTextArea.setText("\n\n Fehler beim Einlesen!\n Mögliche Fehlerquelle:\n -Komma statt Punkt\n als Trennzeichen\n -Buchstaben in der Eingabe ");
                 }
             } else
-                fractals.setMandelbrotmengeConfigured();
-                fractals.paintFractals();
+                fractalPresenter.setMandelbrotmengeConfigured();
+                fractalPresenter.paintFractals();
 
             if (frame.configurationView.complexPlaneCheckBox.isSelected())
             {
                 fractals.paintKoordinateSystem();
             }
-            frame.setAktTextFieldText();
+            frame.setAktTextFieldText(fractalPresenter);
         }
 
         if (cmd.equals("Abbrechen!"))
         {
-            fractals.stop();
+            fractalPresenter.stop();
             frame.statusBarView.progressBar.setValue(0);
             frame.statusBarView.progressBar.setString("Abgebrochen!");
         }
@@ -101,16 +101,16 @@ public class ConfigurationController implements ActionListener, ItemListener
         JComboBox selectedItem = (JComboBox) ie.getSource();
         if (selectedItem.getSelectedItem().equals("Schwarz Weiß"))
         {
-            fractals.setColorMode(Mode.BLACK_WHITE);
+            fractalPresenter.setColorMode(Mode.BLACK_WHITE);
         }
         if (selectedItem.getSelectedItem().equals("Schwarz Weiß Modulo"))
         {
-            fractals.setColorMode(Mode.BLACK_WHITE_MODULO);
+            fractalPresenter.setColorMode(Mode.BLACK_WHITE_MODULO);
         }
         if (selectedItem.getSelectedItem().equals("Farbabstufungen"))
         {
             frame.configurationView.colorButton.setEnabled(true);
-            fractals.setColorMode(Mode.COLOR);
+            fractalPresenter.setColorMode(Mode.COLOR);
         } else
             frame.configurationView.colorButton.setEnabled(false);
 

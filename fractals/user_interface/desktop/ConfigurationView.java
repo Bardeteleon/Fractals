@@ -2,7 +2,6 @@ package fractals.user_interface.desktop;
 
 import java.awt.*;
 import javax.swing.*;
-import fractals.user_interface.desktop.FractalView;
 
 public class ConfigurationView extends JPanel {
     public JButton repaintButton;
@@ -19,7 +18,7 @@ public class ConfigurationView extends JPanel {
     public JComboBox<String> colorModeChooser;
     public JTextArea exceptionTextArea;
 
-    public ConfigurationView(FractalView fractals) {
+    public ConfigurationView() {
         setVisible(false);
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
         setBackground(Color.WHITE);
@@ -48,12 +47,10 @@ public class ConfigurationView extends JPanel {
         JPanel iterationDimensionPanel = new JPanel(new GridLayout(2,2,5,5));
         iterationDimensionPanel.add(new JLabel("Iterationstiefe: "));
         iterationField = new JTextField(5);
-        iterationField.setText(String.valueOf(fractals.getIterationRange()));
         iterationDimensionPanel.add(iterationField);
         iterationDimensionPanel.setToolTipText("Größe des zu zeichnenden Bereichs in Pixel(quadratische Form)");
         iterationDimensionPanel.add(new JLabel("Größe: "));
         dimensionField = new JTextField(4);
-        dimensionField.setText(String.valueOf(fractals.getWidthHeight()));
         iterationDimensionPanel.add(dimensionField);
         add(iterationDimensionPanel);
 
@@ -62,17 +59,13 @@ public class ConfigurationView extends JPanel {
         intervalPanel.setBorder(BorderFactory.createTitledBorder("Intervall"));
         intervalPanel.add(new JLabel("Min: "));
         reelField2 = new JTextField(4);
-        reelField2.setText(String.valueOf(fractals.getMinRe()));
         intervalPanel.add(reelField2);
         imagField2 = new JTextField(4);
-        imagField2.setText(String.valueOf(fractals.getMinIm()));
         intervalPanel.add(imagField2);
         intervalPanel.add(new JLabel("Max: "));
         reelField3 = new JTextField(4);
-        reelField3.setText(String.valueOf(fractals.getMaxRe()));
         intervalPanel.add(reelField3);
         imagField3 = new JTextField(4);
-        imagField3.setText(String.valueOf(fractals.getMaxIm()));
         intervalPanel.add(imagField3);
         add(intervalPanel);
 
