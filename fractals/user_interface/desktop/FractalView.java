@@ -25,15 +25,9 @@ import fractals.core.Colorizer.Mode;
 
 public class FractalView extends JPanel
 {
-	private Complex min, max;
-	private int widthHeight;
-	private int iterationRangeManual;
-	private Configuration.IterationRangeMode iterationRangeMode;
 	private Colorizer.Mode mode;
 	private BufferedImage buffer;
-	private Complex paramC;
 	private Color[] colorCollection = { Color.blue, Color.cyan, Color.darkGray, Color.magenta };
-	public boolean mandelbrotmengePainted = true;
 	private AtomicInteger status = new AtomicInteger(0);
 	private Thread waitThread;
 	private fractals.core.Fractal fractal;
@@ -41,20 +35,15 @@ public class FractalView extends JPanel
 
 	public FractalView()
 	{
-		setMinCoordinate(new Complex(-2.0, -2.0));
-		setMaxCoordinate(new Complex(2.0, 2.0));
-		setWidthHeight(1000);
-		setIterationRange(40);
+		configuration = new Configuration.Builder()
+										 .widthHeight(1000)
+										 .iterationRangeManual(40)
+										 .iterationRangeMode(IterationRangeMode.MANUAL)
+										 .variant(fractals.core.Variant.MANDELBROT)
+										 .min(new Complex(-2.0, -2.0))
+										 .max(new Complex(2.0, 2.0))
+										 .build();
 		setColorMode(Colorizer.Mode.BLACK_WHITE);
-	}
-
-	public FractalView(double minRe, double maxRe, double minIm, double maxIm, int iterationRange, int widthHeight, Colorizer.Mode mode)
-	{
-		setMinCoordinate(new Complex(minRe, minIm));
-		setMaxCoordinate(new Complex(maxRe, maxIm));
-		setWidthHeight(widthHeight);
-		setIterationRange(iterationRange);
-		setColorMode(mode);
 	}
 
 	@Override
@@ -64,7 +53,7 @@ public class FractalView extends JPanel
 		super.setBackground(Color.WHITE);
 		if (buffer == null)
 		{
-			buffer = new BufferedImage(widthHeight, widthHeight, BufferedImage.TYPE_INT_ARGB);
+			buffer = new BufferedImage(configuration.widthHeight, configuration.widthHeight, BufferedImage.TYPE_INT_ARGB);
 			paintFractals(null, null);
 		}
 		// Graphics2D g = (Graphics2D) graphics;
@@ -74,7 +63,7 @@ public class FractalView extends JPanel
 		// RenderingHints.VALUE_RENDER_QUALITY);
 		// g.setRenderingHint(RenderingHints.KEY_INTERPOLATION,
 		// RenderingHints.VALUE_INTERPOLATION_BICUBIC);
-		graphics.drawImage(buffer, 0, 0, widthHeight, widthHeight, this);
+		graphics.drawImage(buffer, 0, 0, configuration.widthHeight, configuration.widthHeight, this);
 	}
 
 	/**
@@ -92,21 +81,11 @@ public class FractalView extends JPanel
 		{
 			progress.setString(null);
 		}
-		if (param == null)
-			mandelbrotmengePainted = true;
-		else
-		{
-			mandelbrotmengePainted = false;
-			this.paramC = param;
-		}
+		boolean mandelbrotmengePainted = Objects.isNull(param);
 		configuration = new Configuration.Builder()
-								.widthHeight(widthHeight)
-								.iterationRangeManual(iterationRangeManual)
-								.iterationRangeMode(iterationRangeMode)
+								.basedOn(configuration)
 								.variant(mandelbrotmengePainted ? fractals.core.Variant.MANDELBROT : fractals.core.Variant.JULIA)
 								.variant_parameter(mandelbrotmengePainted ? Optional.empty() : Optional.of(param))
-								.min(min)
-								.max(max)
 								.build();
 		fractal = new fractals.core.Fractal(configuration);
 		fractal.setFinishCallback(() -> { SwingUtilities.invokeLater(() -> {
@@ -141,6 +120,11 @@ public class FractalView extends JPanel
 		return buffer;
 	}
 
+	public boolean isMandelbrotmengeConfigured()
+	{
+		return configuration.variant == Variant.MANDELBROT;
+	}
+
 	public Complex getCoordinate(int x, int y)
 	{
 		if (Objects.nonNull(configuration))
@@ -152,27 +136,27 @@ public class FractalView extends JPanel
 	@Override
 	public Dimension getPreferredSize()
 	{
-		return new Dimension(this.widthHeight, this.widthHeight);
+		return new Dimension(configuration.widthHeight, configuration.widthHeight);
 	}
 
 	public double getMinRe()
 	{
-		return min.getReal();
+		return configuration.min.getReal();
 	}
 
 	public double getMaxRe()
 	{
-		return max.getReal();
+		return configuration.max.getReal();
 	}
 
 	public double getMinIm()
 	{
-		return min.getImag();
+		return configuration.min.getImag();
 	}
 
 	public double getMaxIm()
 	{
-		return max.getImag();
+		return configuration.max.getImag();
 	}
 
 	public int getIterationRange()
@@ -180,12 +164,12 @@ public class FractalView extends JPanel
 		if (Objects.nonNull(configuration))
 			return configuration.getIterationRange();
 		else
-			return iterationRangeManual;
+			return configuration.iterationRangeManual;
 	}
 
 	public int getWidthHeight()
 	{
-		return widthHeight;
+		return configuration.widthHeight;
 	}
 
 	public Color[] getColorCollection()
@@ -195,19 +179,23 @@ public class FractalView extends JPanel
 
 	public Complex getParamC()
 	{
-		return paramC;
+		return configuration.variant_parameter.orElse(null);
 	}
 
 	public void setIterationRange(int range)
 	{
 		if (range <= 0)
 		{
-			iterationRangeMode = IterationRangeMode.AUTOMATIC;
+			configuration = new Builder().basedOn(configuration)
+									     .iterationRangeMode(IterationRangeMode.AUTOMATIC)
+										 .build();
 		}
 		else
 		{
-			iterationRangeManual = range;
-			iterationRangeMode = IterationRangeMode.MANUAL;
+			configuration = new Builder().basedOn(configuration)
+			                             .iterationRangeMode(IterationRangeMode.MANUAL)
+										 .iterationRangeManual(range)
+										 .build();
 		}
 	}
 
@@ -218,12 +206,12 @@ public class FractalView extends JPanel
 
 	public void setMinCoordinate(Complex min)
 	{
-		this.min = min;
+		configuration = new Builder().basedOn(configuration).min(min).build();
 	}
 
 	public void setMaxCoordinate(Complex max)
 	{
-		this.max = max;
+		configuration = new Builder().basedOn(configuration).max(max).build();
 	}
 
 	public void setWidthHeight(int wH)
@@ -232,7 +220,7 @@ public class FractalView extends JPanel
 		{
 			if (buffer != null)
 				buffer = new BufferedImage(wH, wH, BufferedImage.TYPE_INT_ARGB);
-			widthHeight = wH;
+			configuration = new Builder().basedOn(configuration).widthHeight(wH).build();
 			setSize(wH, wH);
 		}
 	}
@@ -251,7 +239,7 @@ public class FractalView extends JPanel
 	public void paintZoomRec(int x, int y, int width)
 	{
 		Graphics g = getGraphics();
-		g.setClip(0, 0, widthHeight, widthHeight);
+		g.setClip(0, 0, configuration.widthHeight, configuration.widthHeight);
 		g.setXORMode(Color.RED);
 		g.drawRect(x, y, width, width);
 	}
@@ -278,9 +266,13 @@ public class FractalView extends JPanel
 					@Override
 					public void run()
 					{
-						if (min.getReal() == -2.0 && min.getImag() == -2.0 && max.getReal() == 2.0 && max.getImag() == 2.0)
+						if (configuration.min.getReal() == -2.0 && 
+						    configuration.min.getImag() == -2.0 && 
+							configuration.max.getReal() == 2.0 && 
+							configuration.max.getImag() == 2.0)
 						{
 							Graphics g = buffer.getGraphics();
+							int widthHeight = configuration.widthHeight;
 							g.setColor(Color.GRAY);
 							g.drawLine(0, widthHeight / 2 - 1, widthHeight, widthHeight / 2 - 1);
 							g.drawLine(widthHeight / 2, 0, widthHeight / 2, widthHeight);

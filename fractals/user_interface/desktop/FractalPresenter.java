@@ -62,7 +62,7 @@ public class FractalPresenter implements MouseListener, MouseMotionListener
                 }
                 setInteractive(false);
                 frame.configurationView.repaintButton.setText("Abbrechen!");
-                if (fractals.mandelbrotmengePainted)
+                if (fractals.isMandelbrotmengeConfigured())
                     fractals.paintFractals(null, frame.statusBarView.progressBar);
                 else
                     fractals.paintFractals(fractals.getParamC(), frame.statusBarView.progressBar);
@@ -74,7 +74,7 @@ public class FractalPresenter implements MouseListener, MouseMotionListener
     @Override
     public void mouseClicked(MouseEvent me)
     {
-        if (fractals.mandelbrotmengePainted)
+        if (fractals.isMandelbrotmengeConfigured())
         {
             if (SwingUtilities.isLeftMouseButton(me))
             {
