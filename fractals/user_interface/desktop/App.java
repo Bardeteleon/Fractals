@@ -47,7 +47,7 @@ public class App
 		
 		FractalPresenter fractalPresenter = new FractalPresenter(windowView.fractalView, windowView);
 		WindowController windowController = new WindowController(windowView, fractalPresenter);
-		MenuBarController menuBarController = new MenuBarController(windowView.fractalView, windowView);
+		MenuBarController menuBarController = new MenuBarController(windowView);
 		ColorSelectionController colorSelectionController = new ColorSelectionController(windowView.colorSelectionView, windowView.fractalView.getColorCollection(), windowView.configurationView);
 		ConfigurationController configurationController = new ConfigurationController(windowView.fractalView, windowView, fractalPresenter, colorSelectionController);
 

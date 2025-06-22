@@ -4,14 +4,11 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import javax.imageio.ImageIO;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import javax.swing.SwingUtilities;
@@ -137,6 +134,11 @@ public class FractalView extends JPanel
 		colorizer.setMode(mode);
 		colorizer.setColorCollection(colorCollection);
 		colorizer.applyTo(buffer);
+	}
+
+	public BufferedImage getImage()
+	{
+		return buffer;
 	}
 
 	public Complex getCoordinate(int x, int y)
@@ -301,23 +303,5 @@ public class FractalView extends JPanel
 		};
 		wait.setDaemon(true);
 		wait.start();
-
-	}
-
-	public void store(File destination)
-	{
-		if (destination.getName().toLowerCase().endsWith(".png"))
-		{
-			BufferedImage img = new BufferedImage(widthHeight, widthHeight, BufferedImage.TYPE_INT_ARGB);
-			Graphics graphics = img.createGraphics();
-			paintComponent(graphics);
-			try
-			{
-				ImageIO.write(img, "png", destination);
-			} catch (IOException e)
-			{
-				e.printStackTrace();
-			}
-		}
 	}
 }

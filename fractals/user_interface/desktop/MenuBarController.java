@@ -9,28 +9,27 @@ import javax.swing.JOptionPane;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.InputStream;
+import java.util.Objects;
+import javax.imageio.ImageIO;
 
-import fractals.user_interface.desktop.FractalView;
 import fractals.user_interface.desktop.WindowView;
 
 public class MenuBarController implements ActionListener
 {
-    private FractalView fractals;
-    private WindowView frame;
+    private WindowView windowView;
     private JFileChooser chooser;
 
-    public MenuBarController(FractalView fractals, WindowView frame)
+    public MenuBarController(WindowView windowView)
     {
-        this.fractals = fractals;
-        this.frame = frame;
+        this.windowView = windowView;
         makeInteractive();
     }
 
     private void makeInteractive()
     {
-        frame.menuBarView.optionButton.addActionListener(this);
-        frame.menuBarView.saveButton.addActionListener(this);
-        frame.menuBarView.helpButton.addActionListener(this);
+        windowView.menuBarView.optionButton.addActionListener(this);
+        windowView.menuBarView.saveButton.addActionListener(this);
+        windowView.menuBarView.helpButton.addActionListener(this);
     }
 
     @Override
@@ -39,7 +38,7 @@ public class MenuBarController implements ActionListener
         String cmd = e.getActionCommand();
         if (cmd.equals("Optionen"))
         {
-            frame.configurationView.setVisible(!frame.configurationView.isVisible());
+            windowView.configurationView.setVisible(!windowView.configurationView.isVisible());
         }
         if (cmd.equals("Speichern"))
         {
@@ -61,18 +60,18 @@ public class MenuBarController implements ActionListener
                 }
             });
 
-            if (chooser.showSaveDialog(frame) == JFileChooser.APPROVE_OPTION)
+            if (chooser.showSaveDialog(windowView) == JFileChooser.APPROVE_OPTION)
             {
                 String path = chooser.getSelectedFile().getPath();
                 if (path != null)
                 {
-                    fractals.store(new File(path));
+                    storeFractalImage(new File(path));
                 }
             }
         }
         if (cmd.equals("Hilfe"))
         {
-            JOptionPane.showMessageDialog(frame, dateiLaden("Hilfe.txt"), "Hilfe", JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(windowView, dateiLaden("Hilfe.txt"), "Hilfe", JOptionPane.INFORMATION_MESSAGE);
         }
     }
 
@@ -104,5 +103,21 @@ public class MenuBarController implements ActionListener
 			}
 		}
 		return new String(data);
+	}
+
+	public void storeFractalImage(File destination)
+	{
+		if (Objects.isNull(windowView.fractalView.getImage())) return;
+
+		if (destination.getName().toLowerCase().endsWith(".png"))
+		{
+			try
+			{
+				ImageIO.write(windowView.fractalView.getImage(), "png", destination);
+			} catch (IOException e)
+			{
+				e.printStackTrace();
+			}
+		}
 	}
 }
