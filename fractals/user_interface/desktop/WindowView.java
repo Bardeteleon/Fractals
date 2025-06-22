@@ -23,9 +23,9 @@ public class WindowView extends JFrame
 	{
 		super("Fractal v2.0");
 
-		fractalView = new FractalView();
-		fractalViewScrollable = new FractalViewScrollable(fractalView);
 		statusBarView = new StatusBarView();
+		fractalView = new FractalView(statusBarView);
+		fractalViewScrollable = new FractalViewScrollable(fractalView);
 		menuBarView = new MenuBarView();
 		configurationView = new ConfigurationView(fractalView);
 		colorSelectionView = new ColorSelectionView(this);

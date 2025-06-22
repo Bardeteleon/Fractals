@@ -22,6 +22,7 @@ import fractals.core.Configuration.IterationRangeMode;
 import fractals.core.Variant;
 import fractals.core.Colorizer;
 import fractals.core.Colorizer.Mode;
+import fractals.user_interface.desktop.StatusBarView;
 
 public class FractalView extends JPanel
 {
@@ -32,9 +33,11 @@ public class FractalView extends JPanel
 	private Thread waitThread;
 	private fractals.core.Fractal fractal;
 	private fractals.core.Configuration configuration;
+	private StatusBarView statusBarView;
 
-	public FractalView()
+	public FractalView(StatusBarView statusBarView)
 	{
+		this.statusBarView = statusBarView;
 		configuration = new Configuration.Builder()
 										 .widthHeight(1000)
 										 .iterationRangeManual(40)
@@ -54,7 +57,7 @@ public class FractalView extends JPanel
 		if (buffer == null)
 		{
 			buffer = new BufferedImage(configuration.widthHeight, configuration.widthHeight, BufferedImage.TYPE_INT_ARGB);
-			paintFractals(null, null);
+			paintFractals(null);
 		}
 		// Graphics2D g = (Graphics2D) graphics;
 		// g.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
@@ -66,21 +69,9 @@ public class FractalView extends JPanel
 		graphics.drawImage(buffer, 0, 0, configuration.widthHeight, configuration.widthHeight, this);
 	}
 
-	/**
-	 * Die Methode generiert die Mandelbrotmenge, wenn für paramC null übergeben
-	 * wird. Andernfalls generiert die Methode die Juliamenge mit dem
-	 * übergebenem Parameter paramC. Der Fortschritt der Berechnungen kann
-	 * mithilfe von progress veranschaulicht werden.
-	 * 
-	 * @param paramC
-	 * @param progress
-	 */
-	public void paintFractals(final Complex param, final JProgressBar progress)
+	public void paintFractals(final Complex param)
 	{
-		if (progress != null)
-		{
-			progress.setString(null);
-		}
+		statusBarView.progressBar.setString(null);
 		boolean mandelbrotmengePainted = Objects.isNull(param);
 		configuration = new Configuration.Builder()
 								.basedOn(configuration)
@@ -91,12 +82,10 @@ public class FractalView extends JPanel
 		fractal.setFinishCallback(() -> { SwingUtilities.invokeLater(() -> {
 			colorizeImage();
 			repaint();
-			if (Objects.nonNull(progress))
-				progress.setString("Fertig!");
+			statusBarView.progressBar.setString("Fertig!");
 		}); });
 		fractal.setStatusUpdateCallback((status) -> { SwingUtilities.invokeLater(() -> { 
-			if (Objects.nonNull(progress)) 
-				progress.setValue(status); 
+			statusBarView.progressBar.setValue(status); 
 		}); });
 		fractal.evaluate();
 	}

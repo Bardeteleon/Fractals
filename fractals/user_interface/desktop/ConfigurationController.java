@@ -63,13 +63,13 @@ public class ConfigurationController implements ActionListener, ItemListener
             {
                 try
                 {
-                    fractals.paintFractals(new Complex(Double.parseDouble(frame.statusBarView.reelField1.getText()), Double.parseDouble(frame.statusBarView.imagField1.getText())), frame.statusBarView.progressBar);
+                    fractals.paintFractals(new Complex(Double.parseDouble(frame.statusBarView.reelField1.getText()), Double.parseDouble(frame.statusBarView.imagField1.getText())));
                 } catch (NumberFormatException ex)
                 {
                     frame.configurationView.exceptionTextArea.setText("\n\n Fehler beim Einlesen!\n Mögliche Fehlerquelle:\n -Komma statt Punkt\n als Trennzeichen\n -Buchstaben in der Eingabe ");
                 }
             } else
-                fractals.paintFractals(null, frame.statusBarView.progressBar);
+                fractals.paintFractals(null);
 
             if (frame.configurationView.complexPlaneCheckBox.isSelected())
             {
