@@ -37,7 +37,7 @@ public class ConfigurationView extends JPanel {
         iterationCheckBox.setToolTipText("Die Iterationszahl wird beim zoomen automatisch erhöht.");
         iterationCheckBox.setSelected(true);
         complexPlaneCheckBox = new JCheckBox("GaußscheZahlenebene");
-        complexPlaneCheckBox.setToolTipText("Gaußsche Zahlenebene beim nächsten Neu Zeichnen ein-/ausblenden (nur beim Standrad-Intervall möglich)");
+        complexPlaneCheckBox.setToolTipText("Gaußsche Zahlenebene beim nächsten Neu Zeichnen ein-/ausblenden. Nur beim Standardintervall möglich.");
         checkBoxPanel.add(juliaCheckBox);
         checkBoxPanel.add(complexPlaneCheckBox);
         checkBoxPanel.add(iterationCheckBox);
@@ -84,6 +84,7 @@ public class ConfigurationView extends JPanel {
 
         exceptionTextArea = new JTextArea();
         exceptionTextArea.setEditable(false);
+        exceptionTextArea.setLineWrap(true);
         add(exceptionTextArea);
     }
 }

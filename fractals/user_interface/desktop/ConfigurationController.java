@@ -71,13 +71,10 @@ public class ConfigurationController implements ActionListener, ItemListener
                     frame.configurationView.exceptionTextArea.setText("\n\n Fehler beim Einlesen!\n Mögliche Fehlerquelle:\n -Komma statt Punkt\n als Trennzeichen\n -Buchstaben in der Eingabe ");
                 }
             } else
-                fractalPresenter.setMandelbrotmengeConfigured();
-                fractalPresenter.paintFractals();
-
-            if (frame.configurationView.complexPlaneCheckBox.isSelected())
             {
-                fractals.paintKoordinateSystem();
+                fractalPresenter.setMandelbrotmengeConfigured();
             }
+            fractalPresenter.paintFractals();
             frame.setAktTextFieldText(fractalPresenter);
         }
 

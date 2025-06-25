@@ -19,6 +19,7 @@ import java.awt.image.BufferedImage;
 import java.util.Objects;
 import java.awt.Color;
 import java.util.Optional;
+import java.awt.Graphics;
 
 public class FractalPresenter implements MouseListener, MouseMotionListener
 {
@@ -54,6 +55,7 @@ public class FractalPresenter implements MouseListener, MouseMotionListener
 		fractal = new fractals.core.Fractal(configuration);
 		fractal.setFinishCallback(() -> { SwingUtilities.invokeLater(() -> {
 			colorizeImage();
+            paintCoordinateSystem();
             fractalView.setImage(buffer, configuration.widthHeight);
 			fractalView.repaint();
 			windowView.statusBarView.progressBar.setString("Fertig!");
@@ -77,6 +79,41 @@ public class FractalPresenter implements MouseListener, MouseMotionListener
 		colorizer.setColorCollection(colorCollection);
 		colorizer.applyTo(buffer);
 	}
+
+    private void paintCoordinateSystem()
+    {
+        if (!windowView.configurationView.complexPlaneCheckBox.isSelected())
+        {
+            return;
+        }
+
+        if (configuration.min.getReal() == -2.0 && 
+            configuration.min.getImag() == -2.0 && 
+            configuration.max.getReal() == 2.0 && 
+            configuration.max.getImag() == 2.0)
+        {
+            Graphics g = buffer.getGraphics();
+            int widthHeight = configuration.widthHeight;
+            g.setColor(Color.GRAY);
+            g.drawLine(0, widthHeight / 2 - 1, widthHeight, widthHeight / 2 - 1);
+            g.drawLine(widthHeight / 2, 0, widthHeight / 2, widthHeight);
+            g.drawString("imaginäre Achse", widthHeight / 2 + 5, 10);
+            g.drawString("reelle Achse", widthHeight - 80, widthHeight / 2 - 5);
+            g.drawLine(widthHeight / 4, widthHeight / 2 - 5, widthHeight / 4, widthHeight / 2 + 5);
+            g.drawLine((3 * widthHeight) / 4, widthHeight / 2 - 5, (3 * widthHeight) / 4, widthHeight / 2 + 5);
+            g.drawLine(widthHeight / 2 - 5, widthHeight / 4, widthHeight / 2 + 5, widthHeight / 4);
+            g.drawLine(widthHeight / 2 - 5, (3 * widthHeight) / 4, widthHeight / 2 + 5, (3 * widthHeight) / 4);
+            g.drawString("-1", widthHeight / 4 - 5, widthHeight / 2 - 7);
+            g.drawString("1", (3 * widthHeight) / 4 - 3, widthHeight / 2 - 7);
+            g.drawString("i", widthHeight / 2 + 7, widthHeight / 4 + 5);
+            g.drawString("-i", widthHeight / 2 + 7, (3 * widthHeight) / 4 + 5);
+        }
+        else
+        {
+            windowView.configurationView.exceptionTextArea.setText("Die Gaußsche Zahlenebene kann nur im Standardintervall (-2, -2) bis (2, 2) dargestellt werden. Rechtsklick im Fraktal zeichnet das Standardintervall.");
+            windowView.configurationView.complexPlaneCheckBox.setSelected(false);
+        }
+    }
 
 	public void setMandelbrotmengeConfigured()
 	{
