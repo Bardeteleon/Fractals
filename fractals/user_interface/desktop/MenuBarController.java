@@ -7,10 +7,15 @@ import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.JOptionPane;
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.io.InputStreamReader;
 import java.io.InputStream;
 import java.util.Objects;
 import javax.imageio.ImageIO;
+import java.util.stream.Collectors;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 import fractals.user_interface.desktop.WindowView;
 
@@ -71,38 +76,22 @@ public class MenuBarController implements ActionListener
         }
         if (cmd.equals("Hilfe"))
         {
-            JOptionPane.showMessageDialog(windowView, dateiLaden("Hilfe.txt"), "Hilfe", JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(windowView, readTextFile("Hilfe.txt"), "Hilfe", JOptionPane.INFORMATION_MESSAGE);
         }
     }
 
-	private String dateiLaden(String name)
+	private String readTextFile(String name)
 	{
-		InputStream stream = this.getClass().getResourceAsStream(name);
-		char[] data = null;
-		if (stream != null)
-		{
-			InputStreamReader reader = new InputStreamReader(stream);
-			try
-			{
-				int size = stream.available();
-				data = new char[size];
-				reader.read(data, 0, size);
-			} catch (IOException e)
-			{
-				e.printStackTrace();
-			} finally
-			{
-				try
-				{
-					stream.close();
-					reader.close();
-				} catch (IOException e)
-				{
-					e.printStackTrace();
-				}
-			}
-		}
-		return new String(data);
+        String content = "";
+        try {
+            Path path = Paths.get(getClass().getClassLoader().getResource(name).toURI());
+            content = Files.lines(path).collect(Collectors.joining("\n"));
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return content;
 	}
 
 	public void storeFractalImage(File destination)

@@ -1,0 +1,8 @@
+"Optionen" geben detaillierte Zeichenmöglichkeiten.
+"Speichern" lässt das aktuelle Fraktal als .png speichern.
+Im Fraktal kann mit der Maus manövriert werden:
+- Mit Links einen Bereich markieren und beim loslassen wird dorthin gezoomed.
+- Rechtsklick setzt den Zoom zurück.
+- Linksklick bei:
+    - Mandelbrotmenge wechselt zur Juliamenge mit Parameter von der aktuellen Koordinate bei der Maus.
+    - Juliamenge wechselt zur Mandelbrotmenge mit Standard-Einstellung.

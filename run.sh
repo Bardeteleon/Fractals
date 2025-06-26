@@ -1,1 +1,1 @@
-./build.sh && java -cp build fractals.user_interface.desktop.App
+./build.sh && java -cp "build;resources" fractals.user_interface.desktop.App
